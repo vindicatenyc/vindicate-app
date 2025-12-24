@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Secrets (NEVER commit)
+*.pem
+*.key
+secrets/
+credentials/
+
+# Generated files
+*.pdf
+*.docx
+!templates/**/*.docx
+
+# Database
+*.db
+*.sqlite3
+data/
+
+# Uploads (user data)
+uploads/

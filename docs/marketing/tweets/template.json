@@ -1,0 +1,20 @@
+{
+  "tweet_types": {
+    "feature_announcement": {
+      "template": "New in Vindicate NYC:\n\n{feature_name} is live!\n\n{description}\n\nThis helps you {user_benefit}.\n\nTry it: {link}\nStar us: github.com/vindicatenyc/vindicate-app\n\n#{hashtag1} #{hashtag2}",
+      "max_length": 280,
+      "required_fields": ["feature_name", "description", "user_benefit"]
+    },
+    "building_in_public": {
+      "template": "Building Vindicate NYC Day {day_number}:\n\nToday we tackled {challenge}.\n\nHere's what we learned:\n\n{learnings}\n\nCode: {pr_link}\n\nWhat should we build next?",
+      "max_length": 280,
+      "is_thread": true
+    },
+    "milestone": {
+      "template": "Milestone reached!\n\nVindicate NYC {milestone_name}\n\n{stats}\n\nThank you to everyone who contributed!\n\n{contributors}\n\n{call_to_action}",
+      "max_length": 280
+    }
+  },
+  "hashtags": ["legaltech", "opensource", "debtrelief", "buildinpublic", "indiedev"],
+  "scheduled_posts": []
+}

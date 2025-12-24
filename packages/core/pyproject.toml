@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vindicate-core"
+version = "0.1.0"
+description = "Core financial calculations and document generation for Vindicate NYC"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "AGPL-3.0"
+keywords = ["debt", "legal-tech", "financial-recovery", "433-a"]
+authors = [
+  { name = "Vindicate NYC LLC" }
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Legal Industry",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "pydantic>=2.5.0",
+  "httpx>=0.25.0",
+  "PyPDF2>=3.0.0",
+  "python-docx>=1.0.0",
+  "openpyxl>=3.1.0",
+  "cryptography>=41.0.0",
+  "structlog>=23.2.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.4.0",
+  "pytest-cov>=4.1.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-benchmark>=4.0.0",
+  "hypothesis>=6.90.0",
+]
+dev = [
+  "black>=23.12.0",
+  "ruff>=0.1.8",
+  "mypy>=1.7.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
