@@ -54,3 +54,7 @@ data/
 
 # Uploads (user data)
 uploads/
+
+# Auto Claude data directory
+.auto-claude/
+.worktrees/

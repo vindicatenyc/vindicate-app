@@ -24,10 +24,12 @@ dependencies = [
   "pydantic>=2.5.0",
   "httpx>=0.25.0",
   "PyPDF2>=3.0.0",
+  "pdfplumber>=0.11.0",
   "python-docx>=1.0.0",
   "openpyxl>=3.1.0",
   "cryptography>=41.0.0",
   "structlog>=23.2.0",
+  "reportlab>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +44,9 @@ dev = [
   "black>=23.12.0",
   "ruff>=0.1.8",
   "mypy>=1.7.0",
+]
+llm = [
+  "anthropic>=0.39.0",
 ]
 
 [tool.pytest.ini_options]

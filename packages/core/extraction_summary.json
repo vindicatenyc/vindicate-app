@@ -1,0 +1,383 @@
+{
+  "scan_folder": "/Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data",
+  "scan_time": "2025-12-25T02:50:18.788563",
+  "total_pdfs_found": 109,
+  "successful_parses": 109,
+  "parse_errors": 0,
+  "document_types": [
+    "pay_stub",
+    "unknown",
+    "bank_statement",
+    "utility_bill",
+    "insurance_statement",
+    "tax_return",
+    "retirement_statement"
+  ],
+  "taxpayer": {
+    "name": "David Rutgos",
+    "documents_matched": [
+      "unlocked_statement_Nov 24, 4_00 AM.pdf",
+      "unlocked_statement_Dec 1, 4_00 AM.pdf",
+      "unlocked_statement_Dec 6, 10_30 PM.pdf",
+      "unlocked_statement_Dec 1, 4_00 AM (1).pdf",
+      "unlocked_statement_Nov 10, 4_00 AM.pdf",
+      "unlocked_statement_Nov 17, 4_00 AM.pdf",
+      "unlocked_Car Repo 2020 Infiniti QX60 - Nov 15 2025 - 2-17 PM.pdf",
+      "unlocked_Geico Car Insurance view-document.pdf",
+      "unlocked_Verizon Cell phones - Your online bill is ready_.pdf",
+      "unlocked_Coned Bill Statement Nov 2025.pdf",
+      "unlocked_Verizon Internet Your bill is now available online.pdf",
+      "unlocked_Coned Bill Statement.pdf",
+      "unlocked_NYS Tax Last Three Payments.pdf",
+      "unlocked_NYS Tax Installment Agreement Make a Payment 2.pdf",
+      "unlocked_NYS Tax Installment Agreement Make a Payment.pdf",
+      "unlocked_BHFS Statement for Apr 1, 2025.pdf",
+      "unlocked_BHFS Statement for May 2, 2025.pdf",
+      "unlocked_BHFS Statement for May 27, 2025.pdf",
+      "unlocked_BHFS Statement for May 2, 2025 (1).pdf",
+      "unlocked_Statement for Sep 29, 2025.pdf",
+      "unlocked_BHFS Statement for May 13, 2025.pdf",
+      "unlocked_Statement for Sep 16, 2025.pdf",
+      "unlocked_Statement for Aug 19, 2025.pdf",
+      "unlocked_Statement for Oct 15, 2025.pdf",
+      "unlocked_Statement for Aug 5, 2025.pdf",
+      "unlocked_Statement for Sep 2, 2025.pdf",
+      "unlocked_Statement for Oct 30, 2025.pdf",
+      "unlocked_Statement for Nov 25, 2025.pdf",
+      "unlocked_Statement for Nov 10, 2025.pdf",
+      "unlocked_BHFS Statement for Jun 9, 2025.pdf",
+      "unlocked_Statement for Sep 30, 2025.pdf",
+      "unlocked_Statement for Aug 29, 2025.pdf",
+      "unlocked_Statement for Jul 31, 2025.pdf",
+      "unlocked_Statement for May 30, 2025.pdf",
+      "unlocked_Pay Date 2025-10-03.pdf",
+      "unlocked_Pay Date 2025-10-17.pdf",
+      "unlocked_Statement for Nov 14, 2025.pdf",
+      "unlocked_Statement for Nov 14, 2025 copy.pdf",
+      "unlocked_Pay Date 2025-07-25.pdf",
+      "unlocked_Statement for May 16, 2025.pdf",
+      "unlocked_Statement for Apr 4, 2025.pdf",
+      "unlocked_Pay Date 2025-07-11.pdf",
+      "unlocked_Statement for May 2, 2025.pdf",
+      "unlocked_Pay Date 2025-09-05.pdf",
+      "unlocked_Statement for Apr 18, 2025.pdf",
+      "unlocked_Pay Date 2025-10-31.pdf",
+      "unlocked_Pay Date 2025-08-08.pdf",
+      "unlocked_Pay Date 2025-08-22.pdf",
+      "unlocked_Pay Date 2025-06-27.pdf",
+      "unlocked_Statement for Jun 13, 2025.pdf",
+      "unlocked_Statement for Nov 28, 2025.pdf"
+    ],
+    "w2_count": 4,
+    "annual_wages": 196472.15,
+    "employers": [
+      "Uber",
+      "BHFS",
+      "Prospect Kids",
+      "HHAX"
+    ],
+    "federal_tax_withheld": 0.0
+  },
+  "spouse": {
+    "name": "Alisa Oblow Rutgos",
+    "documents_matched": [],
+    "w2_count": 0,
+    "annual_wages": 0.0,
+    "employers": []
+  },
+  "bank_accounts": [
+    {
+      "institution": "Chase",
+      "type": "checking",
+      "balance": 4955.32,
+      "owner": "joint",
+      "source_file": "unlocked_20250725-statements-3387-.pdf"
+    },
+    {
+      "institution": "Chase",
+      "type": "checking",
+      "balance": 800.01,
+      "owner": "joint",
+      "source_file": "unlocked_20250925-statements-9773-.pdf"
+    },
+    {
+      "institution": "Chase",
+      "type": "retirement",
+      "balance": 1644.81,
+      "owner": "joint",
+      "source_file": "unlocked_20250925-statements-3387-.pdf"
+    }
+  ],
+  "excluded_documents": [
+    {
+      "file": "unlocked_Account _ Bridgecrest.com.pdf",
+      "owner_name": "service at",
+      "reason": "Owner 'service at' not taxpayer/spouse"
+    }
+  ],
+  "extraction_audit": [
+    {
+      "field": "taxpayer.paystub.Uber.wages",
+      "value": 1762.08,
+      "source_file": "unlocked_2025 November Monthly Summary.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.7,
+      "raw_text": "Gross: 146.84, YTD: 0, Freq: monthly",
+      "timestamp": "2025-12-25T07:50:18.754713"
+    },
+    {
+      "field": "utilities.cell",
+      "value": 317.71,
+      "source_file": "unlocked_Verizon Cell phones - Your online bill is ready_.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.9,
+      "raw_text": "Amount due: $317.71",
+      "timestamp": "2025-12-25T07:50:18.761614"
+    },
+    {
+      "field": "utilities.electric",
+      "value": 765.24,
+      "source_file": "unlocked_Coned Bill Statement Nov 2025.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.9,
+      "raw_text": "Amount due: $765.24",
+      "timestamp": "2025-12-25T07:50:18.761942"
+    },
+    {
+      "field": "utilities.internet",
+      "value": 121.67,
+      "source_file": "unlocked_Verizon Internet Your bill is now available online.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.9,
+      "raw_text": "Amount due: $121.67",
+      "timestamp": "2025-12-25T07:50:18.762153"
+    },
+    {
+      "field": "utilities.electric",
+      "value": 229.1,
+      "source_file": "unlocked_Coned Bill Statement.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.9,
+      "raw_text": "Amount due: $229.10",
+      "timestamp": "2025-12-25T07:50:18.762360"
+    },
+    {
+      "field": "taxpayer.paystub.BHFS.wages",
+      "value": 27499.94,
+      "source_file": "unlocked_BHFS Statement for Apr 1, 2025.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.7,
+      "raw_text": "Gross: 1057.69, YTD: 0, Freq: bi_weekly",
+      "timestamp": "2025-12-25T07:50:18.765446"
+    },
+    {
+      "field": "taxpayer.paystub.Prospect Kids.wages",
+      "value": 7664.25,
+      "source_file": "unlocked_Statement for Sep 30, 2025.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.8,
+      "raw_text": "Gross: 1287.00, YTD: 7664.25, Freq: bi_weekly",
+      "timestamp": "2025-12-25T07:50:18.766774"
+    },
+    {
+      "field": "taxpayer.paystub.HHAX.wages",
+      "value": 159545.88,
+      "source_file": "unlocked_Statement for May 30, 2025.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 0.7,
+      "raw_text": "Gross: 6136.38, YTD: 0, Freq: bi_weekly",
+      "timestamp": "2025-12-25T07:50:18.767789"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 1679.66,
+      "source_file": "unlocked_20250227-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 1679.66",
+      "timestamp": "2025-12-25T07:50:18.773947"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 1735.05,
+      "source_file": "unlocked_20250527-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 1735.05",
+      "timestamp": "2025-12-25T07:50:18.775097"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 2919.27,
+      "source_file": "unlocked_20250128-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 2919.27",
+      "timestamp": "2025-12-25T07:50:18.775848"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 2685.43,
+      "source_file": "unlocked_20250326-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 2685.43",
+      "timestamp": "2025-12-25T07:50:18.776617"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 1686.77,
+      "source_file": "unlocked_20250826-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 1686.77",
+      "timestamp": "2025-12-25T07:50:18.777533"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 600.0,
+      "source_file": "unlocked_20250826-statements-9773-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 600.00",
+      "timestamp": "2025-12-25T07:50:18.777769"
+    },
+    {
+      "field": "bank_account.Chase.retirement",
+      "value": 456.36,
+      "source_file": "unlocked_20250626-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 456.36",
+      "timestamp": "2025-12-25T07:50:18.778809"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 2841.09,
+      "source_file": "unlocked_20241226-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 2841.09",
+      "timestamp": "2025-12-25T07:50:18.779512"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 654.44,
+      "source_file": "unlocked_20251128-statements-9773-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 654.44",
+      "timestamp": "2025-12-25T07:50:18.779758"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 2236.16,
+      "source_file": "unlocked_20251128-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 2236.16",
+      "timestamp": "2025-12-25T07:50:18.780476"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 4141.64,
+      "source_file": "unlocked_20250424-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 4141.64",
+      "timestamp": "2025-12-25T07:50:18.781226"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 800.01,
+      "source_file": "unlocked_20250925-statements-9773-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 800.01",
+      "timestamp": "2025-12-25T07:50:18.781473"
+    },
+    {
+      "field": "bank_account.Chase.retirement",
+      "value": 1644.81,
+      "source_file": "unlocked_20250925-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 1644.81",
+      "timestamp": "2025-12-25T07:50:18.782257"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 195.01,
+      "source_file": "unlocked_20251027-statements-9773-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 195.01",
+      "timestamp": "2025-12-25T07:50:18.782521"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 750.27,
+      "source_file": "unlocked_20251027-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 750.27",
+      "timestamp": "2025-12-25T07:50:18.783348"
+    },
+    {
+      "field": "bank_account.Chase.checking",
+      "value": 4955.32,
+      "source_file": "unlocked_20250725-statements-3387-.pdf",
+      "source_page": 0,
+      "extraction_method": "regex",
+      "confidence": 1.0,
+      "raw_text": "Ending balance: 4955.32",
+      "timestamp": "2025-12-25T07:50:18.784243"
+    }
+  ],
+  "warnings": [
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Nov 24, 4_00 AM.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Dec 1, 4_00 AM.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Dec 6, 10_30 PM.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Dec 1, 4_00 AM (1).pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Nov 10, 4_00 AM.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/uber/unlocked_statement_Nov 17, 4_00 AM.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/car/unlocked_Car Repo 2020 Infiniti QX60 - Nov 15 2025 - 2-17 PM.pdf",
+    "Vehicle repossession detected in unlocked_Car Repo 2020 Infiniti QX60 - Nov 15 2025 - 2-17 PM.pdf: 2020 Infiniti QX60",
+    "Vehicle repossession detected in unlocked_200233207301 David Rutgos - Copy of Contract.pdf: 2020 INFINITI QX60",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/bills/unlocked_Geico Car Insurance view-document.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/bills/unlocked_Verizon Cell phones - Your online bill is ready_.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/bills/unlocked_Verizon Internet Your bill is now available online.pdf",
+    "Could not extract owner name from /Users/davidr/dev/personal/biz/vindicate.nyc/personal-financial-data/Taxes/unlocked_NYS Tax Last Three Payments.pdf",
+    "Duplicate statement for Chase checking - used higher balance",
+    "Duplicate statement for Chase checking - used higher balance",
+    "Duplicate statement for Chase checking - used higher balance",
+    "Duplicate statement for Chase checking - used higher balance",
+    "Duplicate statement for Chase checking - used higher balance",
+    "Duplicate statement for Chase retirement - used higher balance",
+    "Duplicate statement for Chase checking - used higher balance"
+  ],
+  "errors": []
+}
