@@ -3,13 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "vindicate-core"
+name = "vindicate-workspace"
 version = "0.1.0"
-description = "Core financial calculations and document generation for Vindicate NYC"
+description = "Vindicate NYC - AI-powered debt advocacy platform"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "AGPL-3.0"
-keywords = ["debt", "legal-tech", "financial-recovery", "433-a"]
+keywords = ["debt", "legal-tech", "financial-recovery", "433-a", "agents"]
 authors = [
   { name = "Vindicate NYC LLC" }
 ]
@@ -20,40 +20,26 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
-dependencies = [
-  "pydantic>=2.5.0",
-  "httpx>=0.25.0",
-  "PyPDF2>=3.0.0",
-  "pdfplumber>=0.11.0",
-  "python-docx>=1.0.0",
-  "openpyxl>=3.1.0",
-  "cryptography>=41.0.0",
-  "structlog>=23.2.0",
-  "reportlab>=4.0.0",
-]
 
 [project.optional-dependencies]
-test = [
-  "pytest>=7.4.0",
-  "pytest-cov>=4.1.0",
-  "pytest-asyncio>=0.21.0",
-  "pytest-benchmark>=4.0.0",
-  "hypothesis>=6.90.0",
-]
 dev = [
   "black>=23.12.0",
   "ruff>=0.1.8",
   "mypy>=1.7.0",
-]
-llm = [
-  "anthropic>=0.39.0",
+  "pytest>=7.4.0",
+  "pytest-cov>=4.1.0",
+  "pytest-asyncio>=0.21.0",
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/vindicate_core"]
+# Workspace configuration for editable installs
+[tool.hatch.envs.default]
+dependencies = [
+  "vindicate-core @ {root:uri}/packages/core",
+  "vindicate-agents @ {root:uri}/packages/agents",
+]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["packages/core/tests", "packages/agents/tests"]
 asyncio_mode = "auto"
 
 [tool.black]
