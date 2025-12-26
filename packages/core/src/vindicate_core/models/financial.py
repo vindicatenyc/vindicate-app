@@ -10,7 +10,7 @@ These models are designed to be reusable across different financial
 analysis contexts, independent of specific IRS forms or tax calculations.
 """
 
-from datetime import date
+import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
@@ -118,7 +118,7 @@ class Transaction(BaseModel):
         }
     }
 
-    date: date = Field(
+    date: datetime.date = Field(
         description="The date the transaction occurred or was posted"
     )
     description: str = Field(
@@ -256,7 +256,7 @@ class BankAccount(BaseModel):
         return [t for t in self.transactions if t.category == category]
 
     def get_transactions_in_range(
-        self, start_date: date, end_date: date
+        self, start_date: datetime.date, end_date: datetime.date
     ) -> list[Transaction]:
         """Get transactions within a date range (inclusive)."""
         return [
@@ -286,8 +286,8 @@ class FinancialPeriod(BaseModel):
         }
     }
 
-    start_date: date = Field(description="Start date of the financial period (inclusive)")
-    end_date: date = Field(description="End date of the financial period (inclusive)")
+    start_date: datetime.date = Field(description="Start date of the financial period (inclusive)")
+    end_date: datetime.date = Field(description="End date of the financial period (inclusive)")
     label: Optional[str] = Field(
         default=None,
         description="Human-readable label for the period (e.g., 'January 2025', 'Q1 2025')",
