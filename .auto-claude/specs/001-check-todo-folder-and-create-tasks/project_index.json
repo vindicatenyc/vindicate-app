@@ -1,0 +1,236 @@
+{
+  "project_root": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app",
+  "project_type": "monorepo",
+  "services": {
+    "core": {
+      "name": "core",
+      "path": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app/packages/core",
+      "language": "Python",
+      "framework": null,
+      "type": "library",
+      "package_manager": "pip",
+      "key_directories": {
+        "src": {
+          "path": "src",
+          "purpose": "Source code"
+        },
+        "tests": {
+          "path": "tests",
+          "purpose": "Tests"
+        }
+      },
+      "testing": "pytest",
+      "test_directory": "tests",
+      "environment": {
+        "variables": {
+          "ANTHROPIC_API_KEY": {
+            "value": "<REDACTED>",
+            "source": ".env",
+            "type": "string",
+            "sensitive": true,
+            "required": false
+          }
+        },
+        "required_count": 0,
+        "optional_count": 0,
+        "detected_count": 1
+      }
+    },
+    "web": {
+      "name": "web",
+      "path": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app/packages/web",
+      "language": "TypeScript",
+      "framework": "Next.js",
+      "type": "frontend",
+      "package_manager": "npm",
+      "default_port": 3000,
+      "styling": "Tailwind CSS",
+      "state_management": "Zustand",
+      "dev_command": "npm run dev",
+      "key_directories": {
+        "src": {
+          "path": "src",
+          "purpose": "Source code"
+        },
+        "tests": {
+          "path": "tests",
+          "purpose": "Tests"
+        }
+      },
+      "dependencies": [
+        "next",
+        "react",
+        "react-dom",
+        "@tanstack/react-query",
+        "zustand",
+        "tailwindcss",
+        "@vindicate/shared"
+      ],
+      "dev_dependencies": [
+        "@playwright/test",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "autoprefixer",
+        "eslint",
+        "eslint-config-next",
+        "postcss",
+        "typescript",
+        "vitest"
+      ],
+      "testing": "Vitest",
+      "e2e_testing": "Playwright",
+      "test_directory": "tests",
+      "consumes": [
+        "api.api"
+      ]
+    },
+    "shared": {
+      "name": "shared",
+      "path": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app/packages/shared",
+      "language": "TypeScript",
+      "framework": null,
+      "type": "library",
+      "package_manager": "npm",
+      "key_directories": {
+        "src": {
+          "path": "src",
+          "purpose": "Source code"
+        },
+        "tests": {
+          "path": "tests",
+          "purpose": "Tests"
+        }
+      },
+      "entry_point": "src/index.ts",
+      "dependencies": [
+        "zod"
+      ],
+      "dev_dependencies": [
+        "@types/node",
+        "tsup",
+        "typescript",
+        "vitest"
+      ],
+      "testing": "Vitest",
+      "test_directory": "tests"
+    },
+    "cli": {
+      "name": "cli",
+      "path": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app/packages/cli",
+      "language": "TypeScript",
+      "framework": null,
+      "type": "unknown",
+      "package_manager": "npm",
+      "dev_command": "npm run dev",
+      "key_directories": {
+        "src": {
+          "path": "src",
+          "purpose": "Source code"
+        },
+        "tests": {
+          "path": "tests",
+          "purpose": "Tests"
+        }
+      },
+      "entry_point": "src/index.ts",
+      "dependencies": [
+        "commander",
+        "chalk",
+        "ora",
+        "inquirer",
+        "@vindicate/shared"
+      ],
+      "dev_dependencies": [
+        "@types/inquirer",
+        "@types/node",
+        "tsup",
+        "tsx",
+        "typescript",
+        "vitest"
+      ],
+      "testing": "Vitest",
+      "test_directory": "tests"
+    },
+    "api": {
+      "name": "api",
+      "path": "/Users/davidr/dev/personal/biz/vindicate.nyc/vindicate-app/packages/api",
+      "language": "TypeScript",
+      "framework": "Hono",
+      "type": "backend",
+      "package_manager": "npm",
+      "default_port": 3000,
+      "dev_command": "npm run dev",
+      "key_directories": {
+        "src": {
+          "path": "src",
+          "purpose": "Source code"
+        },
+        "tests": {
+          "path": "tests",
+          "purpose": "Tests"
+        }
+      },
+      "entry_point": "src/index.ts",
+      "dependencies": [
+        "@hono/node-server",
+        "hono",
+        "zod",
+        "@vindicate/shared"
+      ],
+      "dev_dependencies": [
+        "@types/node",
+        "eslint",
+        "tsup",
+        "tsx",
+        "typescript",
+        "vitest"
+      ],
+      "testing": "Vitest",
+      "test_directory": "tests",
+      "api": {
+        "routes": [
+          {
+            "path": "/health",
+            "methods": [
+              "GET"
+            ],
+            "file": "src/index.ts",
+            "framework": "Express",
+            "requires_auth": false
+          },
+          {
+            "path": "/api/v1",
+            "methods": [
+              "GET"
+            ],
+            "file": "src/index.ts",
+            "framework": "Express",
+            "requires_auth": false
+          }
+        ],
+        "total_routes": 2,
+        "methods": [
+          "GET"
+        ],
+        "protected_routes": []
+      },
+      "monitoring": {
+        "health_checks": [
+          "/health"
+        ]
+      }
+    }
+  },
+  "infrastructure": {
+    "ci": "GitHub Actions",
+    "ci_workflows": [
+      "ci.yml",
+      "agent-dispatch.yml"
+    ]
+  },
+  "conventions": {
+    "git_hooks": "Husky"
+  },
+  "monorepo_tool": "pnpm-workspace"
+}

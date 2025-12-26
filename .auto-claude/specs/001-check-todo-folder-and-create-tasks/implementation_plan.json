@@ -1,0 +1,41 @@
+{
+  "feature": "check-todo-folder-and-create-tasks",
+  "spec_name": "check-todo-folder-and-create-tasks",
+  "workflow_type": "simple",
+  "total_phases": 1,
+  "recommended_workers": 1,
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Create Tasks",
+      "description": "Read todo file and create tasks using TodoWrite",
+      "depends_on": [],
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Use TodoWrite to create the 7 Phase 0 tasks from docs/todo/vindicate-tasks.md",
+          "service": "main",
+          "status": "completed",
+          "files_to_create": [],
+          "files_to_modify": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "run": "Verify all 7 tasks appear in todo list"
+          },
+          "notes": "Created all 7 Phase 0 tasks using TodoWrite. Tasks 0.1-0.7 are now in the todo list with status \"pending\".",
+          "updated_at": "2025-12-26T19:13:32.390027+00:00"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-01-06T12:00:00Z",
+    "complexity": "simple",
+    "estimated_sessions": 1
+  },
+  "status": "human_review",
+  "planStatus": "review",
+  "updated_at": "2025-12-26T19:11:01.971Z",
+  "last_updated": "2025-12-26T19:13:32.390037+00:00"
+}

@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "spec": "001-check-todo-folder-and-create-tasks",
+  "state": "building",
+  "subtasks": {
+    "completed": 0,
+    "total": 1,
+    "in_progress": 1,
+    "failed": 0
+  },
+  "phase": {
+    "current": "Create Tasks",
+    "id": 1,
+    "total": 1
+  },
+  "workers": {
+    "active": 0,
+    "max": 1
+  },
+  "session": {
+    "number": 1,
+    "started_at": "2025-12-26T14:12:53.341232"
+  },
+  "last_update": "2025-12-26T14:12:53.343714"
+}

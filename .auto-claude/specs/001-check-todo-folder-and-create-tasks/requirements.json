@@ -1,0 +1,4 @@
+{
+  "task_description": "Check the \"todo\" folder and see if there is any file there with tasks. If yes, create the tasks.",
+  "workflow_type": "feature"
+}
