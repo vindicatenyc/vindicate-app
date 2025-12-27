@@ -3,6 +3,7 @@
 This package provides reusable financial data structures for:
 - IRS Form 433-A data structures (legacy.py)
 - Transaction management and categorization (financial.py)
+- Audit trail and provenance tracking (audit.py)
 - Bank account representation
 - Financial period analysis
 - Monthly spending breakdowns
@@ -41,7 +42,7 @@ from vindicate_core.models.legacy import (
     Form433A,
     # Calculation Results
     ExpenseAllowance,
-    AuditEntry,
+    AuditEntry,  # Legacy AuditEntry for backwards compatibility with calculator.py
     Form433AResult,
     # Worksheet
     Form433ALineItem,
@@ -75,6 +76,19 @@ from vindicate_core.models.financial import BankAccount as NewBankAccount
 
 # For backwards compatibility, use the legacy BankAccount as the default export
 BankAccount = LegacyBankAccount
+
+# Import audit trail models (new audit system)
+# Note: AuditEntry from audit.py is exported as ProvenanceEntry to avoid
+# conflict with the legacy AuditEntry used by calculator.py
+from vindicate_core.models.audit import (
+    AuditSeverity,
+    BoundingBox,
+    AuditSource,
+    AuditEntry as ProvenanceEntry,  # Renamed to avoid conflict with legacy AuditEntry
+    AuditWarning,
+    AuditError,
+    AuditTrail,
+)
 
 __all__ = [
     # Enumerations
@@ -111,7 +125,7 @@ __all__ = [
     "Form433A",
     # Calculation Results
     "ExpenseAllowance",
-    "AuditEntry",
+    "AuditEntry",  # Legacy AuditEntry for backwards compatibility
     "Form433AResult",
     # Worksheet
     "Form433ALineItem",
@@ -130,4 +144,12 @@ __all__ = [
     "Transaction",
     "FinancialPeriod",
     "MonthlyBreakdown",
+    # Audit Trail Models (new audit system)
+    "AuditSeverity",
+    "BoundingBox",
+    "AuditSource",
+    "ProvenanceEntry",  # New AuditEntry renamed to avoid conflict
+    "AuditWarning",
+    "AuditError",
+    "AuditTrail",
 ]
