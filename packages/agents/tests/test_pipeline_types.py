@@ -128,6 +128,7 @@ class TestRawDocument:
             source_filename="paystub.pdf",
             raw_text="Content",
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
             audit_trail=[
                 AuditTrailEntry(
                     agent_name="document_intake",
@@ -217,6 +218,7 @@ class TestExtractedTransactions:
             total_debits=Decimal("500"),
             transaction_count=2,
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert len(txns.transactions) == 2
         assert txns.net_cashflow == Decimal("500")
@@ -226,6 +228,7 @@ class TestExtractedTransactions:
         txns = ExtractedTransactions(
             source_document_id=uuid4(),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
             audit_trail=[
                 AuditTrailEntry(
                     agent_name="transaction_extractor",
@@ -351,6 +354,7 @@ class TestValidatedTransactions:
             total_with_warnings=1,
             total_requires_review=1,
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert validated.validation_pass_rate == 0.9  # 9/10
 
@@ -401,6 +405,7 @@ class TestFinancialModel:
             gross_monthly_income=Decimal("5000"),
             total_monthly_expenses=Decimal("4000"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert model.gross_monthly_income == Decimal("5000")
         assert model.months_analyzed == 3
@@ -414,6 +419,7 @@ class TestFinancialModel:
             gross_monthly_income=Decimal("5000"),
             total_monthly_expenses=Decimal("4000"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert model.net_monthly_cashflow == Decimal("1000")
 
@@ -426,6 +432,7 @@ class TestFinancialModel:
             gross_monthly_income=Decimal("5000"),
             total_monthly_expenses=Decimal("4000"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert model.expense_to_income_ratio == 0.8
 
@@ -438,6 +445,7 @@ class TestFinancialModel:
             months_analyzed=3,
             monthly_disposable_income=Decimal("500"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert model1.qualifies_for_cnc is False
 
@@ -448,6 +456,7 @@ class TestFinancialModel:
             months_analyzed=3,
             monthly_disposable_income=Decimal("0"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert model2.qualifies_for_cnc is True
 
@@ -458,6 +467,7 @@ class TestFinancialModel:
             analysis_period_end=date(2025, 3, 31),
             months_analyzed=3,
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
             audit_trail=[
                 AuditTrailEntry(
                     agent_name="document_intake",
@@ -505,6 +515,7 @@ class TestFinancialModel:
             analysis_period_end=date(2025, 3, 31),
             months_analyzed=3,
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
         )
         assert len(model.source_document_ids) == 3
 
@@ -515,6 +526,7 @@ class TestFinancialModel:
             analysis_period_end=date(2025, 3, 31),
             months_analyzed=3,
             confidence=Confidence(overall=0.8),
+            data_completeness=0.9,
             recommendations=[
                 "Consider reducing dining out expenses",
                 "Review subscription services for potential savings",
@@ -653,6 +665,7 @@ class TestDataProgression:
                 classification=0.95,
                 validation=0.95,
             ),
+            data_completeness=0.9,
         )
 
         # Verify full pipeline linkage
@@ -688,6 +701,7 @@ class TestSerialization:
             gross_monthly_income=Decimal("5000"),
             total_monthly_expenses=Decimal("4000"),
             confidence=Confidence(overall=0.9),
+            data_completeness=0.9,
             recommendations=["Test recommendation"],
         )
         json_str = model.model_dump_json()
