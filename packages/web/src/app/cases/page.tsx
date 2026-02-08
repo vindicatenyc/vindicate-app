@@ -1,7 +1,7 @@
-import { Briefcase, Plus } from 'lucide-react';
+'use client';
+
 import { PageHeader } from '@/components/ui/page-header';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
+import { CaseList } from '@/components/cases/case-list';
 
 export default function CasesPage() {
   return (
@@ -9,20 +9,9 @@ export default function CasesPage() {
       <PageHeader
         title="Cases"
         description="Manage disputes, complaints, and legal proceedings."
-        actions={
-          <Button size="sm">
-            <Plus className="mr-1.5 h-4 w-4" />
-            New Case
-          </Button>
-        }
       />
 
-      <EmptyState
-        icon={Briefcase}
-        title="No cases yet"
-        description="Create a case to start tracking disputes, complaints, or legal actions."
-        actionLabel="Create Case"
-      />
+      <CaseList />
     </div>
   );
 }

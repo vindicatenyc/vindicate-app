@@ -42,3 +42,6 @@ export { useNotifications } from './use-notifications';
 export type { NewNotification } from './use-notifications';
 
 export { useCreditScore } from './use-credit-score';
+
+export { useDocuments } from './use-documents';
+export type { NewDocument } from './use-documents';

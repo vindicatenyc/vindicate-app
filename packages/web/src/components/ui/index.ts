@@ -25,3 +25,4 @@ export * from './page-header';
 export * from './countdown-badge';
 export * from './document-card';
 export * from './wizard-stepper';
+export * from './urgency-indicator';
