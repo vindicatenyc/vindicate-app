@@ -1,0 +1,16 @@
+// Budget & Financial Health Components
+export { BudgetOverview } from './budget-overview';
+export { IncomeSection } from './income-section';
+export { ExpenseSection } from './expense-section';
+export { BudgetBar } from './budget-bar';
+export { SpendingChart } from './spending-chart';
+export { TrendChart } from './trend-chart';
+export { DebtStrategyToggle } from './debt-strategy-toggle';
+export { DebtAccountRow } from './debt-account-row';
+export { DebtTracker } from './debt-tracker';
+export { CreditScoreCard } from './credit-score-card';
+export { CreditFactors } from './credit-factors';
+export { ScoreTrend } from './score-trend';
+export { SavingsGoalCard } from './savings-goal-card';
+export { SavingsGoalForm } from './savings-goal-form';
+export { SavingsGoals } from './savings-goals';
