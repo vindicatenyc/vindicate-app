@@ -3,6 +3,8 @@
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { MobileNav } from './mobile-nav';
+import { VinnyChatPanel } from '@/components/vinny/vinny-chat-panel';
+import { VinnyFab } from '@/components/vinny/vinny-fab';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -23,6 +25,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile bottom nav */}
       <MobileNav />
+
+      {/* Vinny chat */}
+      <VinnyChatPanel />
+      <VinnyFab />
     </div>
   );
 }

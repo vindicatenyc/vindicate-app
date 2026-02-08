@@ -1075,3 +1075,24 @@ Within each phase, many tasks can run in parallel:
 ---
 
 *This task breakdown is a living document. Adjust estimates and scope as development progresses.*
+
+---
+
+## Backlog: Performance & UX Issues
+
+### PERF-1: Slow Initial Tab Load (Cold Compilation)
+
+**Reported by:** Dave (2026-02-08)
+**Description:** First click on each tab/route has a noticeable delay (~1-2 seconds) before anything renders. Subsequent navigations to the same route are fast. This is due to Next.js dev server compiling each route on first request (not pre-compiled).
+
+**Root Cause:** Next.js dev mode uses on-demand compilation. Each route is compiled only when first visited. In production (`next build` + `next start`), all routes are pre-compiled and this delay disappears.
+
+**Potential Fixes:**
+- [ ] Switch to production build for demo (`next build && next start`)
+- [ ] Add loading.tsx skeletons per route group for perceived performance
+- [ ] Consider `next/dynamic` with loading states for heavy components
+- [ ] Evaluate if any route components can be split into smaller chunks
+- [ ] Add Suspense boundaries with skeleton fallbacks in key areas
+
+**Priority:** P2 (UX polish, Phase 7)
+**Est. Time:** 2 hours

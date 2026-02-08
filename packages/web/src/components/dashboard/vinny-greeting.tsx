@@ -5,11 +5,13 @@ import { Bot, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useVinnyChatActions } from '@/stores/app-store';
 import { getTimeOfDay, getGreeting, generateContextualTip } from '@/lib/vinny/greeting-generator';
 
 export function VinnyGreeting() {
   const [dismissed, setDismissed] = useState(false);
   const { accounts, summary } = useAccounts();
+  const { openVinnyChat } = useVinnyChatActions();
 
   const timeOfDay = getTimeOfDay();
   const greeting = getGreeting(timeOfDay);
@@ -65,9 +67,7 @@ export function VinnyGreeting() {
             variant="outline"
             size="sm"
             className="mt-3 gap-2"
-            onClick={() => {
-              console.log('[Vinny] Chat opened from greeting widget');
-            }}
+            onClick={openVinnyChat}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             Chat with Vinny

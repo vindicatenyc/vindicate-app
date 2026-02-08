@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccounts } from '@/hooks/use-accounts';
 import { AccountHeader } from '@/components/accounts/detail/account-header';
@@ -8,6 +8,8 @@ import { AccountOverview } from '@/components/accounts/detail/account-overview';
 import { AccountActivityTab } from '@/components/accounts/detail/account-activity-tab';
 import { AccountDocumentsTab } from '@/components/accounts/detail/account-documents-tab';
 import { AccountPaymentTab } from '@/components/accounts/detail/account-payment-tab';
+import { VinnyTipCard } from '@/components/vinny/vinny-tip-card';
+import { generateAccountTip } from '@/lib/vinny/tip-generator';
 import { cn } from '@/lib/utils';
 
 const TABS = [
@@ -30,6 +32,10 @@ export default function AccountDetailPage({
   const [activeTab, setActiveTab] = useState<TabId>('overview');
 
   const account = getAccount(params.id);
+  const tip = useMemo(
+    () => (account ? generateAccountTip(account) : null),
+    [account]
+  );
 
   if (!account) {
     return (
@@ -51,6 +57,9 @@ export default function AccountDetailPage({
   return (
     <div className="space-y-6">
       <AccountHeader account={account} />
+
+      {/* Vinny contextual tip */}
+      {tip && <VinnyTipCard tip={tip} />}
 
       {/* Tab navigation */}
       <div className="border-b border-border" role="tablist" aria-label="Account detail tabs">

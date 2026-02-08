@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import {
   FinancialHealthCards,
@@ -8,8 +9,15 @@ import {
   VinnyGreeting,
   DebtProgressRing,
 } from '@/components/dashboard';
+import { VinnyTipCard } from '@/components/vinny/vinny-tip-card';
+import { useAccounts } from '@/hooks/use-accounts';
+import { generateDashboardTip } from '@/lib/vinny/tip-generator';
 
 export default function DashboardPage() {
+  const { accounts } = useAccounts();
+
+  const tip = useMemo(() => generateDashboardTip(accounts), [accounts]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -20,6 +28,9 @@ export default function DashboardPage() {
 
       {/* Vinny greeting */}
       <VinnyGreeting />
+
+      {/* Vinny proactive tip */}
+      {tip && <VinnyTipCard tip={tip} />}
 
       {/* Financial health cards */}
       <FinancialHealthCards />

@@ -5,40 +5,33 @@ import Link from 'next/link';
 import { Plus, ClipboardList, UserPlus, MessageCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-
-interface QuickAction {
-  label: string;
-  href?: string;
-  icon: typeof Plus;
-  onClick?: () => void;
-}
-
-const actions: QuickAction[] = [
-  {
-    label: 'Log Activity',
-    href: '/activity/log',
-    icon: ClipboardList,
-  },
-  {
-    label: 'Add Account',
-    href: '/accounts/new',
-    icon: UserPlus,
-  },
-  {
-    label: 'Ask Vinny',
-    icon: MessageCircle,
-    onClick: () => {
-      console.log('[Vinny] Chat triggered from quick actions');
-    },
-  },
-];
+import { useVinnyChatActions } from '@/stores/app-store';
 
 export function QuickActions() {
   const [fabOpen, setFabOpen] = useState(false);
+  const { openVinnyChat } = useVinnyChatActions();
 
   const toggleFab = useCallback(() => {
     setFabOpen(prev => !prev);
   }, []);
+
+  const actions = [
+    {
+      label: 'Log Activity',
+      href: '/activity/log',
+      icon: ClipboardList,
+    },
+    {
+      label: 'Add Account',
+      href: '/accounts/new',
+      icon: UserPlus,
+    },
+    {
+      label: 'Ask Vinny',
+      icon: MessageCircle,
+      onClick: openVinnyChat,
+    },
+  ];
 
   return (
     <>

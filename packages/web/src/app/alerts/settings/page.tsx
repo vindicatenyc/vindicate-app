@@ -1,4 +1,7 @@
+'use client';
+
 import { PageHeader } from '@/components/ui/page-header';
+import { NotificationSettings } from '@/components/notifications/notification-settings';
 
 export default function AlertSettingsPage() {
   return (
@@ -8,11 +11,7 @@ export default function AlertSettingsPage() {
         description="Choose which notifications you want to receive."
       />
 
-      <div className="rounded-xl border border-border bg-card p-8 text-center">
-        <p className="text-muted-foreground">
-          Notification preference toggles will appear here.
-        </p>
-      </div>
+      <NotificationSettings />
     </div>
   );
 }

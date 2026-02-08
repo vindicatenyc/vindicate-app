@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, MessageCircle, Menu } from 'lucide-react';
+import { Search, MessageCircle, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useAppStore } from '@/stores/app-store';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 export function Header() {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
@@ -59,15 +60,7 @@ export function Header() {
         </button>
 
         {/* Notifications */}
-        <Link
-          href="/alerts"
-          className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" aria-hidden="true" />
-          {/* Notification dot */}
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-danger" />
-        </Link>
+        <NotificationBell />
 
         {/* Theme toggle */}
         <ThemeToggle />
