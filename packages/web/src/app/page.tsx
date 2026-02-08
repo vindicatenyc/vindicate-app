@@ -1,5 +1,13 @@
+'use client';
+
 import { PageHeader } from '@/components/ui/page-header';
-import { Button } from '@/components/ui/button';
+import {
+  FinancialHealthCards,
+  RecentActivity,
+  QuickActions,
+  VinnyGreeting,
+  DebtProgressRing,
+} from '@/components/dashboard';
 
 export default function DashboardPage() {
   return (
@@ -7,17 +15,23 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description="Your financial recovery overview at a glance."
-        actions={
-          <Button variant="outline" size="sm">
-            Customize
-          </Button>
-        }
+        actions={<QuickActions />}
       />
 
-      <div className="rounded-xl border border-border bg-card p-8 text-center">
-        <p className="text-muted-foreground">
-          Dashboard with stats, charts, and account summaries coming soon.
-        </p>
+      {/* Vinny greeting */}
+      <VinnyGreeting />
+
+      {/* Financial health cards */}
+      <FinancialHealthCards />
+
+      {/* Progress ring + Activity feed side by side on desktop */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <DebtProgressRing />
+        </div>
+        <div className="lg:col-span-2">
+          <RecentActivity />
+        </div>
       </div>
     </div>
   );
