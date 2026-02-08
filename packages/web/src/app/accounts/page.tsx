@@ -1,7 +1,10 @@
-import { Wallet, Plus } from 'lucide-react';
+'use client';
+
+import Link from 'next/link';
+import { Upload, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
-import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
+import { AccountList } from '@/components/accounts/account-list';
 
 export default function AccountsPage() {
   return (
@@ -10,20 +13,24 @@ export default function AccountsPage() {
         title="Accounts"
         description="Track and manage all your debt accounts."
         actions={
-          <Button size="sm">
-            <Plus className="mr-1.5 h-4 w-4" />
-            Add Account
-          </Button>
+          <>
+            <Link href="/accounts/import">
+              <Button variant="outline" size="sm">
+                <Upload className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Import from Credit Report
+              </Button>
+            </Link>
+            <Link href="/accounts/new">
+              <Button size="sm">
+                <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Add Account
+              </Button>
+            </Link>
+          </>
         }
       />
 
-      <EmptyState
-        icon={Wallet}
-        title="No accounts yet"
-        description="Add your first account to start tracking your debt recovery journey."
-        actionLabel="Add Account"
-        actionHref="/accounts/new"
-      />
+      <AccountList />
     </div>
   );
 }
