@@ -31,7 +31,7 @@
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "echo 'husky disabled for MVP'"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

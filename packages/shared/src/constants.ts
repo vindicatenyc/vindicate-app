@@ -2,6 +2,17 @@
  * Application constants for Vindicate NYC
  */
 
+import type {
+  AccountStatus,
+  AccountCategory,
+  VindicateCaseStatus,
+  ExpenseCategory,
+  ActivityType,
+  NotificationType,
+  DocumentType,
+  CreditRating,
+} from './types';
+
 export const APP_NAME = 'Vindicate NYC';
 export const APP_VERSION = '0.1.0';
 
@@ -40,4 +51,581 @@ legal proceeding.`,
   FINANCIAL: `Financial calculations are estimates based on IRS National Standards and
 user-provided information. Actual results may vary. Consult a tax professional for
 personalized advice.`,
+} as const;
+
+// =============================================================================
+// ACCOUNT STATUS LABELS & COLORS
+// =============================================================================
+
+export const ACCOUNT_STATUS_CONFIG: Record<AccountStatus, {
+  label: string;
+  color: string;
+  bgColor: string;
+  description: string;
+}> = {
+  'current': {
+    label: 'Current',
+    color: 'text-green-700',
+    bgColor: 'bg-green-100',
+    description: 'Account is in good standing',
+  },
+  'late': {
+    label: 'Late',
+    color: 'text-amber-700',
+    bgColor: 'bg-amber-100',
+    description: 'Payment is past due',
+  },
+  'in-collections': {
+    label: 'In Collections',
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+    description: 'Debt has been sent to a collection agency',
+  },
+  'charged-off': {
+    label: 'Charged Off',
+    color: 'text-red-800',
+    bgColor: 'bg-red-200',
+    description: 'Creditor has written off the debt as a loss',
+  },
+  'disputed': {
+    label: 'Disputed',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-100',
+    description: 'You have filed a dispute on this account',
+  },
+  'payment-plan': {
+    label: 'Payment Plan',
+    color: 'text-purple-700',
+    bgColor: 'bg-purple-100',
+    description: 'You have an active payment arrangement',
+  },
+  'settled': {
+    label: 'Settled',
+    color: 'text-green-700',
+    bgColor: 'bg-green-100',
+    description: 'Debt was settled for less than owed',
+  },
+  'paid-in-full': {
+    label: 'Paid in Full',
+    color: 'text-green-800',
+    bgColor: 'bg-green-200',
+    description: 'Account has been fully paid',
+  },
+  'in-litigation': {
+    label: 'In Litigation',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-100',
+    description: 'Legal proceedings are active',
+  },
+  'bankrupt': {
+    label: 'Bankrupt',
+    color: 'text-gray-700',
+    bgColor: 'bg-gray-100',
+    description: 'Included in bankruptcy filing',
+  },
+  'unknown': {
+    label: 'Unknown',
+    color: 'text-gray-500',
+    bgColor: 'bg-gray-50',
+    description: 'Status is not determined',
+  },
+};
+
+// =============================================================================
+// ACCOUNT CATEGORY LABELS & ICONS
+// =============================================================================
+
+export const ACCOUNT_CATEGORY_CONFIG: Record<AccountCategory, {
+  label: string;
+  icon: string;
+  description: string;
+}> = {
+  'credit-card': {
+    label: 'Credit Card',
+    icon: 'CreditCard',
+    description: 'Credit card debt',
+  },
+  'medical': {
+    label: 'Medical',
+    icon: 'Heart',
+    description: 'Medical bills and healthcare debt',
+  },
+  'student-loan': {
+    label: 'Student Loan',
+    icon: 'GraduationCap',
+    description: 'Educational loans',
+  },
+  'auto-loan': {
+    label: 'Auto Loan',
+    icon: 'Car',
+    description: 'Vehicle financing',
+  },
+  'personal-loan': {
+    label: 'Personal Loan',
+    icon: 'Wallet',
+    description: 'Unsecured personal loans',
+  },
+  'utility': {
+    label: 'Utility',
+    icon: 'Zap',
+    description: 'Utility bills (electric, gas, water)',
+  },
+  'rent': {
+    label: 'Rent',
+    icon: 'Home',
+    description: 'Unpaid rent or lease obligations',
+  },
+  'tax': {
+    label: 'Tax',
+    icon: 'FileText',
+    description: 'Tax debt (IRS, state, local)',
+  },
+  'other': {
+    label: 'Other',
+    icon: 'MoreHorizontal',
+    description: 'Other types of debt',
+  },
+};
+
+// =============================================================================
+// CASE STATUS LABELS & COLORS
+// =============================================================================
+
+export const CASE_STATUS_CONFIG: Record<VindicateCaseStatus, {
+  label: string;
+  color: string;
+  bgColor: string;
+  description: string;
+  order: number;
+}> = {
+  'draft': {
+    label: 'Draft',
+    color: 'text-gray-600',
+    bgColor: 'bg-gray-100',
+    description: 'Case is being prepared',
+    order: 0,
+  },
+  'filed': {
+    label: 'Filed',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-100',
+    description: 'Case has been submitted',
+    order: 1,
+  },
+  'under-review': {
+    label: 'Under Review',
+    color: 'text-amber-700',
+    bgColor: 'bg-amber-100',
+    description: 'Case is being reviewed',
+    order: 2,
+  },
+  'response-received': {
+    label: 'Response Received',
+    color: 'text-purple-700',
+    bgColor: 'bg-purple-100',
+    description: 'A response has been received',
+    order: 3,
+  },
+  'hearing-scheduled': {
+    label: 'Hearing Scheduled',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-100',
+    description: 'A hearing date has been set',
+    order: 4,
+  },
+  'in-progress': {
+    label: 'In Progress',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    description: 'Case is actively being worked',
+    order: 5,
+  },
+  'resolved': {
+    label: 'Resolved',
+    color: 'text-green-700',
+    bgColor: 'bg-green-100',
+    description: 'Case has been resolved',
+    order: 6,
+  },
+  'escalated': {
+    label: 'Escalated',
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+    description: 'Case requires additional action',
+    order: 7,
+  },
+  'closed': {
+    label: 'Closed',
+    color: 'text-gray-500',
+    bgColor: 'bg-gray-50',
+    description: 'Case is complete and closed',
+    order: 8,
+  },
+};
+
+// =============================================================================
+// EXPENSE CATEGORY LABELS & ICONS
+// =============================================================================
+
+export const EXPENSE_CATEGORY_CONFIG: Record<ExpenseCategory, {
+  label: string;
+  icon: string;
+  description: string;
+}> = {
+  'housing': {
+    label: 'Housing',
+    icon: 'Home',
+    description: 'Rent, mortgage, property taxes',
+  },
+  'utilities': {
+    label: 'Utilities',
+    icon: 'Zap',
+    description: 'Electric, gas, water, internet',
+  },
+  'food': {
+    label: 'Food',
+    icon: 'UtensilsCrossed',
+    description: 'Groceries and dining',
+  },
+  'transportation': {
+    label: 'Transportation',
+    icon: 'Car',
+    description: 'Gas, transit, car payments',
+  },
+  'healthcare': {
+    label: 'Healthcare',
+    icon: 'Heart',
+    description: 'Medical expenses, prescriptions',
+  },
+  'insurance': {
+    label: 'Insurance',
+    icon: 'Shield',
+    description: 'Health, auto, life insurance',
+  },
+  'debt-payments': {
+    label: 'Debt Payments',
+    icon: 'CreditCard',
+    description: 'Credit cards, loans',
+  },
+  'personal': {
+    label: 'Personal',
+    icon: 'User',
+    description: 'Clothing, entertainment, personal care',
+  },
+  'education': {
+    label: 'Education',
+    icon: 'GraduationCap',
+    description: 'Tuition, books, courses',
+  },
+  'savings': {
+    label: 'Savings',
+    icon: 'PiggyBank',
+    description: 'Emergency fund, investments',
+  },
+  'other': {
+    label: 'Other',
+    icon: 'MoreHorizontal',
+    description: 'Miscellaneous expenses',
+  },
+};
+
+// =============================================================================
+// ACTIVITY TYPE LABELS & ICONS
+// =============================================================================
+
+export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, {
+  label: string;
+  icon: string;
+  color: string;
+  description: string;
+}> = {
+  'phone-call': {
+    label: 'Phone Call',
+    icon: 'Phone',
+    color: 'text-blue-600',
+    description: 'Incoming or outgoing phone call',
+  },
+  'letter-received': {
+    label: 'Letter Received',
+    icon: 'Mail',
+    color: 'text-amber-600',
+    description: 'Physical mail received',
+  },
+  'letter-sent': {
+    label: 'Letter Sent',
+    icon: 'Send',
+    color: 'text-green-600',
+    description: 'Physical mail sent',
+  },
+  'email-received': {
+    label: 'Email Received',
+    icon: 'Inbox',
+    color: 'text-amber-500',
+    description: 'Email received',
+  },
+  'email-sent': {
+    label: 'Email Sent',
+    icon: 'Send',
+    color: 'text-green-500',
+    description: 'Email sent',
+  },
+  'payment-made': {
+    label: 'Payment Made',
+    icon: 'DollarSign',
+    color: 'text-green-700',
+    description: 'You made a payment',
+  },
+  'payment-received': {
+    label: 'Payment Received',
+    icon: 'DollarSign',
+    color: 'text-blue-700',
+    description: 'Payment received or credited',
+  },
+  'dispute-filed': {
+    label: 'Dispute Filed',
+    icon: 'FileWarning',
+    color: 'text-purple-600',
+    description: 'Dispute submitted',
+  },
+  'court-filing': {
+    label: 'Court Filing',
+    icon: 'Gavel',
+    color: 'text-red-600',
+    description: 'Legal document filed',
+  },
+  'settlement-offer': {
+    label: 'Settlement Offer',
+    icon: 'Handshake',
+    color: 'text-teal-600',
+    description: 'Settlement offer made or received',
+  },
+  'credit-report-update': {
+    label: 'Credit Report Update',
+    icon: 'FileCheck',
+    color: 'text-indigo-600',
+    description: 'Change to credit report',
+  },
+  'note': {
+    label: 'Note',
+    icon: 'StickyNote',
+    color: 'text-gray-600',
+    description: 'Personal note',
+  },
+  'other': {
+    label: 'Other',
+    icon: 'MoreHorizontal',
+    color: 'text-gray-500',
+    description: 'Other activity',
+  },
+};
+
+// =============================================================================
+// NOTIFICATION TYPE CONFIG
+// =============================================================================
+
+export const NOTIFICATION_TYPE_CONFIG: Record<NotificationType, {
+  label: string;
+  icon: string;
+  defaultPriority: 'low' | 'medium' | 'high' | 'urgent';
+}> = {
+  'deadline-approaching': {
+    label: 'Deadline Approaching',
+    icon: 'Clock',
+    defaultPriority: 'high',
+  },
+  'payment-due': {
+    label: 'Payment Due',
+    icon: 'DollarSign',
+    defaultPriority: 'medium',
+  },
+  'credit-score-change': {
+    label: 'Credit Score Change',
+    icon: 'TrendingUp',
+    defaultPriority: 'low',
+  },
+  'account-status-change': {
+    label: 'Account Status Change',
+    icon: 'RefreshCw',
+    defaultPriority: 'medium',
+  },
+  'budget-alert': {
+    label: 'Budget Alert',
+    icon: 'AlertTriangle',
+    defaultPriority: 'medium',
+  },
+  'milestone-reached': {
+    label: 'Milestone Reached',
+    icon: 'Trophy',
+    defaultPriority: 'low',
+  },
+  'vinny-tip': {
+    label: 'Tip from Vinny',
+    icon: 'Lightbulb',
+    defaultPriority: 'low',
+  },
+  'system': {
+    label: 'System',
+    icon: 'Info',
+    defaultPriority: 'low',
+  },
+};
+
+// =============================================================================
+// DOCUMENT TYPE CONFIG
+// =============================================================================
+
+export const DOCUMENT_TYPE_CONFIG: Record<DocumentType, {
+  label: string;
+  icon: string;
+  description: string;
+}> = {
+  'validation-letter': {
+    label: 'Validation Letter',
+    icon: 'FileCheck',
+    description: 'Debt validation request or response',
+  },
+  'dispute-letter': {
+    label: 'Dispute Letter',
+    icon: 'FileWarning',
+    description: 'Credit bureau or creditor dispute',
+  },
+  'court-document': {
+    label: 'Court Document',
+    icon: 'Gavel',
+    description: 'Legal filings and court papers',
+  },
+  'payment-receipt': {
+    label: 'Payment Receipt',
+    icon: 'Receipt',
+    description: 'Proof of payment',
+  },
+  'credit-report': {
+    label: 'Credit Report',
+    icon: 'FileText',
+    description: 'Credit report from a bureau',
+  },
+  'correspondence': {
+    label: 'Correspondence',
+    icon: 'Mail',
+    description: 'Letters and emails',
+  },
+  'settlement-agreement': {
+    label: 'Settlement Agreement',
+    icon: 'FileSignature',
+    description: 'Settlement terms and agreements',
+  },
+  'other': {
+    label: 'Other',
+    icon: 'File',
+    description: 'Other documents',
+  },
+};
+
+// =============================================================================
+// CREDIT SCORE CONFIG
+// =============================================================================
+
+export const CREDIT_RATING_CONFIG: Record<CreditRating, {
+  label: string;
+  color: string;
+  bgColor: string;
+  range: [number, number];
+  description: string;
+}> = {
+  'poor': {
+    label: 'Poor',
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+    range: [300, 579],
+    description: 'Significant credit issues',
+  },
+  'fair': {
+    label: 'Fair',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-100',
+    range: [580, 669],
+    description: 'Below average credit',
+  },
+  'good': {
+    label: 'Good',
+    color: 'text-amber-700',
+    bgColor: 'bg-amber-100',
+    range: [670, 739],
+    description: 'Average credit',
+  },
+  'very-good': {
+    label: 'Very Good',
+    color: 'text-green-600',
+    bgColor: 'bg-green-100',
+    range: [740, 799],
+    description: 'Above average credit',
+  },
+  'excellent': {
+    label: 'Excellent',
+    color: 'text-green-700',
+    bgColor: 'bg-green-200',
+    range: [800, 850],
+    description: 'Exceptional credit',
+  },
+};
+
+// =============================================================================
+// URGENCY COLORS
+// =============================================================================
+
+export const URGENCY_CONFIG = {
+  safe: {
+    label: 'No Rush',
+    color: 'text-green-600',
+    bgColor: 'bg-green-100',
+    daysThreshold: 14,
+  },
+  caution: {
+    label: 'Coming Up',
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-100',
+    daysThreshold: 7,
+  },
+  urgent: {
+    label: 'Urgent',
+    color: 'text-red-600',
+    bgColor: 'bg-red-100',
+    daysThreshold: 0,
+  },
+} as const;
+
+// =============================================================================
+// DEFAULT VALUES
+// =============================================================================
+
+export const DEFAULT_NOTIFICATION_PREFERENCES = {
+  deadlines: true,
+  payments: true,
+  creditScore: true,
+  accountActivity: true,
+  budgetAlerts: true,
+  milestones: true,
+  vinnyTips: true,
+};
+
+export const DEFAULT_USER_PROFILE = {
+  theme: 'system' as const,
+  notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES,
+  hasCompletedOnboarding: false,
+};
+
+// =============================================================================
+// NEW YORK STATUTE OF LIMITATIONS
+// =============================================================================
+
+export const NY_STATUTE_OF_LIMITATIONS = {
+  'credit-card': 6, // years
+  'medical': 6,
+  'student-loan': 6, // federal may differ
+  'auto-loan': 4,
+  'personal-loan': 6,
+  'utility': 6,
+  'rent': 6,
+  'tax': 10, // IRS collections
+  'other': 6,
 } as const;

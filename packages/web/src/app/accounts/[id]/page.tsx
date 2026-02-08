@@ -1,22 +1,26 @@
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 
-export default function DashboardPage() {
+export default function AccountDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        description="Your financial recovery overview at a glance."
+        title="Account Detail"
+        description={`Viewing account ${params.id}`}
         actions={
           <Button variant="outline" size="sm">
-            Customize
+            Edit
           </Button>
         }
       />
 
       <div className="rounded-xl border border-border bg-card p-8 text-center">
         <p className="text-muted-foreground">
-          Dashboard with stats, charts, and account summaries coming soon.
+          Account details, status history, and linked cases will appear here.
         </p>
       </div>
     </div>

@@ -1,3 +1,189 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Vindicate NYC Color Palette - Light Mode */
+
+    /* Background colors */
+    --background: 48 20% 97%;        /* #FAFAF8 - warm white */
+    --surface: 0 0% 100%;            /* #FFFFFF */
+    --foreground: 0 0% 18%;          /* #2D2D2D - soft black */
+
+    /* Primary - Sage Green (calm, growth) */
+    --primary: 161 26% 39%;          /* #4A7C6F */
+    --primary-hover: 161 28% 33%;    /* #3D6A5E */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+
+    /* Secondary - Slate Blue (trust, stability) */
+    --secondary: 204 21% 53%;        /* #6B8FA3 */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Accent - Vinny Purple */
+    --accent: 271 27% 56%;           /* #8B6FB0 */
+    --accent-foreground: 0 0% 100%;
+
+    /* Muted - for disabled/subtle elements */
+    --muted: 40 10% 91%;             /* Warm gray background */
+    --muted-foreground: 0 0% 42%;    /* #6B6B6B */
+
+    /* Status Colors */
+    --success: 140 26% 48%;          /* #5B9A6F - muted green */
+    --success-foreground: 0 0% 100%;
+    --warning: 37 56% 50%;           /* #C4943D - warm amber */
+    --warning-foreground: 0 0% 15%;
+    --danger: 0 45% 56%;             /* #C45B5B - muted red */
+    --danger-foreground: 0 0% 100%;
+    --info: 217 43% 56%;             /* #5B84C4 - calm blue */
+    --info-foreground: 0 0% 100%;
+
+    /* Border */
+    --border: 40 12% 89%;            /* #E8E5E0 - warm gray */
+    --input: 40 12% 89%;
+    --ring: 161 26% 39%;             /* Primary color for focus rings */
+
+    /* Card (same as surface with border) */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+
+    /* Border radius */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Vindicate NYC Color Palette - Dark Mode */
+
+    /* Background colors */
+    --background: 216 16% 11%;       /* #1A1D21 - dark charcoal */
+    --surface: 216 14% 16%;          /* #242830 */
+    --foreground: 40 10% 91%;        /* #E8E5E0 */
+
+    /* Primary - Brighter Sage */
+    --primary: 161 28% 50%;          /* #6BA894 */
+    --primary-hover: 161 28% 56%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Lighter Slate */
+    --secondary: 204 28% 60%;        /* #7DA3B8 */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Accent - Vinny Purple (slightly brighter for dark mode) */
+    --accent: 271 35% 60%;           /* Adjusted for dark mode visibility */
+    --accent-foreground: 0 0% 100%;
+
+    /* Muted */
+    --muted: 216 14% 20%;
+    --muted-foreground: 0 0% 63%;    /* #A0A0A0 */
+
+    /* Status Colors (slightly adjusted for dark mode) */
+    --success: 140 28% 52%;
+    --success-foreground: 0 0% 100%;
+    --warning: 37 60% 55%;
+    --warning-foreground: 0 0% 10%;
+    --danger: 0 48% 58%;
+    --danger-foreground: 0 0% 100%;
+    --info: 217 46% 60%;
+    --info-foreground: 0 0% 100%;
+
+    /* Border */
+    --border: 216 12% 24%;           /* #353A42 */
+    --input: 216 12% 24%;
+    --ring: 161 28% 50%;
+
+    /* Card */
+    --card: 216 14% 16%;
+    --card-foreground: 40 10% 91%;
+
+    /* Popover */
+    --popover: 216 14% 16%;
+    --popover-foreground: 40 10% 91%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Focus ring styles - accessible and visible */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Smooth scroll with reduced motion preference support */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Typography defaults */
+  h1 {
+    @apply text-heading-1 text-foreground;
+  }
+
+  h2 {
+    @apply text-heading-2 text-foreground;
+  }
+
+  h3 {
+    @apply text-heading-3 text-foreground;
+  }
+
+  p {
+    @apply text-body;
+  }
+
+  small {
+    @apply text-body-small text-muted-foreground;
+  }
+
+  /* Skip to content link for accessibility */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md;
+  }
+}
+
+@layer utilities {
+  /* Text color utilities for semantic use */
+  .text-muted {
+    @apply text-muted-foreground;
+  }
+
+  /* Shadow utilities that work with dark mode */
+  .shadow-soft-dark {
+    @apply dark:shadow-[0_2px_8px_-2px_rgba(0,0,0,0.32)];
+  }
+
+  /* Safe area padding for mobile devices */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
