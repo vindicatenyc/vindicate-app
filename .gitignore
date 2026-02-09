@@ -58,3 +58,7 @@ uploads/
 # Auto Claude data directory
 .auto-claude/
 .worktrees/
+
+# Supabase self-hosted
+supabase/.env
+supabase/volumes/
