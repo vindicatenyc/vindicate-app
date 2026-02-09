@@ -15,6 +15,7 @@ import type {
   CreditScore,
   Notification,
   Document,
+  ProcessingStatus,
   StatusChange,
   CaseStatusChange,
   HarassmentDetails,
@@ -370,6 +371,14 @@ export function documentFromRow(row: DbRow): Document {
     uploadedAt: toISOString(row.uploaded_at ?? row.created_at),
     description: row.description ?? undefined,
     tags: row.tags ?? [],
+    // AI Processing fields
+    processingStatus: (row.processing_status as ProcessingStatus) ?? undefined,
+    extractedData: row.extracted_data ?? undefined,
+    extractionConfidence: row.extraction_confidence != null ? row.extraction_confidence : undefined,
+    extractionModel: row.extraction_model ?? undefined,
+    extractionTokensUsed: row.extraction_tokens_used != null ? row.extraction_tokens_used : undefined,
+    extractionCost: row.extraction_cost != null ? row.extraction_cost : undefined,
+    autoClassifiedType: row.auto_classified_type ?? undefined,
   };
 }
 
@@ -386,5 +395,12 @@ export function documentToRow(doc: Partial<Document>): DbRow {
   if (doc.activityId !== undefined) row.activity_id = doc.activityId ?? null;
   if (doc.description !== undefined) row.description = doc.description ?? null;
   if (doc.tags !== undefined) row.tags = doc.tags;
+  if (doc.processingStatus !== undefined) row.processing_status = doc.processingStatus;
+  if (doc.extractedData !== undefined) row.extracted_data = doc.extractedData ?? null;
+  if (doc.extractionConfidence !== undefined) row.extraction_confidence = doc.extractionConfidence ?? null;
+  if (doc.extractionModel !== undefined) row.extraction_model = doc.extractionModel ?? null;
+  if (doc.extractionTokensUsed !== undefined) row.extraction_tokens_used = doc.extractionTokensUsed ?? null;
+  if (doc.extractionCost !== undefined) row.extraction_cost = doc.extractionCost ?? null;
+  if (doc.autoClassifiedType !== undefined) row.auto_classified_type = doc.autoClassifiedType ?? null;
   return row;
 }

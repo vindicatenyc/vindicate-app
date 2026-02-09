@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import type { Document, DocumentType } from '@vindicate/shared';
+import type { Document, DocumentType, ProcessingStatus } from '@vindicate/shared';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth/auth-provider';
 import { documentFromRow, documentToRow } from '@/lib/supabase/mappers';
@@ -173,6 +173,10 @@ export function useDocuments() {
       const document = documentFromRow(data);
       setDocuments(prev => [document, ...prev]);
       updateProgress(100, 'complete');
+
+      // Fire-and-forget: trigger AI processing after successful upload
+      triggerProcessing(document.id);
+
       return document;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Upload failed';
@@ -244,6 +248,122 @@ export function useDocuments() {
     return documents.filter(doc => doc.caseId === caseId);
   }, [documents]);
 
+  // -------------------------------------------------------------------------
+  // AI Processing methods
+  // -------------------------------------------------------------------------
+
+  const updateDocumentInState = useCallback(
+    (id: string, updates: Partial<Document>) => {
+      setDocuments((prev) =>
+        prev.map((doc) => (doc.id === id ? { ...doc, ...updates } : doc))
+      );
+    },
+    []
+  );
+
+  const triggerProcessing = useCallback(
+    (documentId: string) => {
+      // Fire-and-forget — update state optimistically then call API
+      updateDocumentInState(documentId, {
+        processingStatus: 'processing' as ProcessingStatus,
+      });
+
+      fetch('/api/documents/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId }),
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          updateDocumentInState(documentId, {
+            processingStatus: result.processingStatus,
+            extractedData: result.extractedData ?? undefined,
+            extractionConfidence: result.confidence,
+            extractionModel: result.model,
+            extractionTokensUsed: result.tokensUsed,
+            extractionCost: result.cost,
+            autoClassifiedType: result.classifiedType ?? undefined,
+          });
+        })
+        .catch(() => {
+          updateDocumentInState(documentId, {
+            processingStatus: 'failed' as ProcessingStatus,
+          });
+        });
+    },
+    [updateDocumentInState]
+  );
+
+  const processDocument = useCallback(
+    async (documentId: string) => {
+      updateDocumentInState(documentId, {
+        processingStatus: 'processing' as ProcessingStatus,
+      });
+
+      try {
+        const res = await fetch('/api/documents/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ documentId }),
+        });
+        const result = await res.json();
+
+        updateDocumentInState(documentId, {
+          processingStatus: result.processingStatus,
+          extractedData: result.extractedData ?? undefined,
+          extractionConfidence: result.confidence,
+          extractionModel: result.model,
+          extractionTokensUsed: result.tokensUsed,
+          extractionCost: result.cost,
+          autoClassifiedType: result.classifiedType ?? undefined,
+        });
+
+        return result;
+      } catch (err) {
+        updateDocumentInState(documentId, {
+          processingStatus: 'failed' as ProcessingStatus,
+        });
+        throw err;
+      }
+    },
+    [updateDocumentInState]
+  );
+
+  const reprocessDocument = useCallback(
+    async (documentId: string, model?: string) => {
+      updateDocumentInState(documentId, {
+        processingStatus: 'processing' as ProcessingStatus,
+      });
+
+      try {
+        const res = await fetch('/api/documents/reprocess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ documentId, model }),
+        });
+        const result = await res.json();
+
+        updateDocumentInState(documentId, {
+          processingStatus: result.processingStatus,
+          extractedData: result.extractedData ?? undefined,
+          extractionConfidence: result.confidence,
+          extractionModel: result.model,
+          extractionTokensUsed: result.tokensUsed,
+          extractionCost: result.cost,
+          autoClassifiedType: result.classifiedType ?? undefined,
+        });
+
+        return result;
+      } catch (err) {
+        updateDocumentInState(documentId, {
+          processingStatus: 'failed' as ProcessingStatus,
+        });
+        throw err;
+      }
+    },
+    [updateDocumentInState]
+  );
+
   const stats = useMemo(() => ({
     totalDocuments: documents.length,
     totalSize: documents.reduce((sum, doc) => sum + doc.size, 0),
@@ -258,5 +378,6 @@ export function useDocuments() {
     addDocument, uploadDocument, downloadDocument, deleteDocument,
     getDocument, getFilteredDocuments, getDocumentsForAccount, getDocumentsForCase,
     clearUploadProgress, removeUploadItem,
+    processDocument, reprocessDocument,
   };
 }

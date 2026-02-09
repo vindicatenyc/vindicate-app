@@ -547,6 +547,14 @@ export type DocumentType =
   | 'medical-bill'
   | 'other';
 
+export type ProcessingStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'needs_review'
+  | 'skipped';
+
 export interface Document {
   id: string;
 
@@ -568,6 +576,15 @@ export interface Document {
   uploadedAt: string;
   description?: string;
   tags?: string[];
+
+  // AI Processing (Phase 9)
+  processingStatus?: ProcessingStatus;
+  extractedData?: Record<string, unknown>;
+  extractionConfidence?: number;
+  extractionModel?: string;
+  extractionTokensUsed?: number;
+  extractionCost?: number;
+  autoClassifiedType?: string;
 }
 
 // =============================================================================
