@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserPlus, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Eye, EyeOff, Mail, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createBrowserClient } from "@/lib/supabase/client";
 
@@ -34,6 +34,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
@@ -83,24 +84,37 @@ export default function RegisterPage() {
       return;
     }
 
-    // Auto sign in after registration (Supabase returns a session for email signups when email confirmation is disabled)
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      // Registration succeeded but auto-login failed; redirect to login
-      router.push("/auth/login");
-      return;
-    }
-
-    router.push("/");
-    router.refresh();
+    // Email verification is enabled — show confirmation message
+    setEmailSent(true);
+    setLoading(false);
   };
 
   return (
     <div className="w-full max-w-sm">
+      {emailSent ? (
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
+            <Mail className="h-6 w-6 text-primary" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground mb-2">
+            Check your email
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            We sent a verification link to{" "}
+            <span className="font-medium text-foreground">{email}</span>.
+            Click the link to activate your account.
+          </p>
+          <p className="text-xs text-muted-foreground mb-6">
+            Didn&apos;t receive it? Check your spam folder or try again.
+          </p>
+          <Link href="/auth/login">
+            <Button variant="outline" className="w-full gap-2">
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+              Back to Sign In
+            </Button>
+          </Link>
+        </div>
+      ) : (
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-1">
           Create your account
@@ -259,6 +273,7 @@ export default function RegisterPage() {
           </Link>
         </p>
       </div>
+      )}
     </div>
   );
 }
