@@ -12,6 +12,11 @@ import {
   File,
   Download,
   Loader2,
+  Landmark,
+  FileSpreadsheet,
+  BadgeDollarSign,
+  UserCheck,
+  HeartPulse,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { DocumentType } from '@vindicate/shared';
@@ -26,6 +31,11 @@ const DOC_ICON_MAP: Record<DocumentType, LucideIcon> = {
   'credit-report': FileText,
   'correspondence': Mail,
   'settlement-agreement': FileSignature,
+  'bank-statement': Landmark,
+  'tax-document': FileSpreadsheet,
+  'income-verification': BadgeDollarSign,
+  'identity-document': UserCheck,
+  'medical-bill': HeartPulse,
   'other': File,
 };
 

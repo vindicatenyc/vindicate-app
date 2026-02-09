@@ -540,6 +540,11 @@ export type DocumentType =
   | 'credit-report'
   | 'correspondence'
   | 'settlement-agreement'
+  | 'bank-statement'
+  | 'tax-document'
+  | 'income-verification'
+  | 'identity-document'
+  | 'medical-bill'
   | 'other';
 
 export interface Document {

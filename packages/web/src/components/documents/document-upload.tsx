@@ -13,13 +13,18 @@ const INPUT_CLASS =
   'h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1';
 
 const DOCUMENT_TYPES: DocumentType[] = [
+  'credit-report',
+  'bank-statement',
+  'tax-document',
+  'income-verification',
+  'medical-bill',
   'validation-letter',
   'dispute-letter',
   'court-document',
   'payment-receipt',
-  'credit-report',
   'correspondence',
   'settlement-agreement',
+  'identity-document',
   'other',
 ];
 

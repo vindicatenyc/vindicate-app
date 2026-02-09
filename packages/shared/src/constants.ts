@@ -514,6 +514,31 @@ export const DOCUMENT_TYPE_CONFIG: Record<DocumentType, {
     icon: 'FileSignature',
     description: 'Settlement terms and agreements',
   },
+  'bank-statement': {
+    label: 'Bank Statement',
+    icon: 'Landmark',
+    description: 'Monthly bank or account statements',
+  },
+  'tax-document': {
+    label: 'Tax Document',
+    icon: 'FileSpreadsheet',
+    description: 'W-2s, 1099s, tax returns, IRS notices',
+  },
+  'income-verification': {
+    label: 'Income Verification',
+    icon: 'BadgeDollarSign',
+    description: 'Pay stubs, employment letters, benefit statements',
+  },
+  'identity-document': {
+    label: 'Identity Document',
+    icon: 'UserCheck',
+    description: 'ID, SSN card, proof of address',
+  },
+  'medical-bill': {
+    label: 'Medical Bill',
+    icon: 'HeartPulse',
+    description: 'Medical bills, EOBs, itemized statements',
+  },
   'other': {
     label: 'Other',
     icon: 'File',
