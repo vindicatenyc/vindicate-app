@@ -31,7 +31,7 @@ interface DocumentListProps {
 }
 
 export function DocumentList({ accountId, caseId, className }: DocumentListProps) {
-  const { documents, deleteDocument, getDocumentsForAccount, getDocumentsForCase } = useDocuments();
+  const { documents, deleteDocument, downloadDocument, getDocumentsForAccount, getDocumentsForCase } = useDocuments();
   const [filterType, setFilterType] = useState<DocumentType | ''>('');
 
   const baseDocuments = useMemo(() => {
@@ -83,8 +83,11 @@ export function DocumentList({ accountId, caseId, className }: DocumentListProps
                 id={doc.id}
                 name={doc.name}
                 type={doc.type}
+                mimeType={doc.mimeType}
                 size={doc.size}
+                url={doc.url}
                 uploadedAt={doc.uploadedAt}
+                onDownload={() => downloadDocument(doc)}
               />
               <Button
                 variant="ghost"
