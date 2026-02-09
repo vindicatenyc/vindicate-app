@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Bot, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,16 @@ import { getTimeOfDay, getGreeting, generateContextualTip } from '@/lib/vinny/gr
 
 export function VinnyGreeting() {
   const [dismissed, setDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { accounts, summary } = useAccounts();
   const { openVinnyChat } = useVinnyChatActions();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const timeOfDay = getTimeOfDay();
-  const greeting = getGreeting(timeOfDay);
+  const greeting = mounted ? getGreeting(timeOfDay) : '';
 
   const tip = useMemo(
     () =>
