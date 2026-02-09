@@ -1,15 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Search, MessageCircle, Menu } from 'lucide-react';
+import { Search, MessageCircle, Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useAppStore } from '@/stores/app-store';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { useAuth } from '@/components/auth/auth-provider';
 
 export function Header() {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
   const toggleVinnyChat = useAppStore((s) => s.toggleVinnyChat);
+  const { user, signOut } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-surface/80 backdrop-blur-sm px-4 lg:px-6">
@@ -76,6 +80,45 @@ export function Header() {
         >
           <MessageCircle className="h-5 w-5" aria-hidden="true" />
         </button>
+
+        {/* User menu */}
+        {user && (
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="User menu"
+              aria-expanded={showUserMenu}
+            >
+              <User className="h-5 w-5" aria-hidden="true" />
+            </button>
+            {showUserMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-50"
+                  onClick={() => setShowUserMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-lg border border-border bg-card shadow-lg py-1">
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      signOut();
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                    Sign out
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

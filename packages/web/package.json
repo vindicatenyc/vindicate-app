@@ -21,6 +21,8 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.3",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.95.3",
     "@tanstack/react-query": "^5.13.0",
     "@vindicate/shared": "workspace:*",
     "class-variance-authority": "^0.7.0",

@@ -42,9 +42,9 @@ const CATEGORY_ICONS: Record<ExpenseCategory, React.ComponentType<{ className?: 
 interface ExpenseSectionProps {
   expenses: ExpenseEntry[];
   month: string;
-  onAdd: (month: string, entry: NewExpenseEntry) => ExpenseEntry | null;
-  onUpdate: (month: string, id: string, updates: Partial<ExpenseEntry>) => void;
-  onDelete: (month: string, id: string) => void;
+  onAdd: (month: string, entry: NewExpenseEntry) => ExpenseEntry | null | Promise<ExpenseEntry | null>;
+  onUpdate: (month: string, id: string, updates: Partial<ExpenseEntry>) => void | Promise<void>;
+  onDelete: (month: string, id: string) => void | Promise<void>;
   className?: string;
 }
 

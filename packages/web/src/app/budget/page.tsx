@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -68,12 +68,14 @@ export default function BudgetPage() {
 
   const { creditScore } = useCreditScore();
 
-  // Get or create budget for selected month
-  const budget = useMemo(() => {
-    const existing = getBudgetByMonth(selectedMonth);
-    if (existing) return existing;
-    return createBudget(selectedMonth);
-  }, [selectedMonth, getBudgetByMonth, createBudget]);
+  // Get budget for selected month, or create it on demand
+  const budget = useMemo(() => getBudgetByMonth(selectedMonth), [selectedMonth, getBudgetByMonth]);
+
+  useEffect(() => {
+    if (!budget && budgets.length >= 0) {
+      createBudget(selectedMonth);
+    }
+  }, [budget, selectedMonth, budgets.length, createBudget]);
 
   const expensesByCategory = useMemo(
     () => getExpensesByCategory(selectedMonth),
@@ -118,21 +120,21 @@ export default function BudgetPage() {
 
       {/* Monthly Overview */}
       <BudgetOverview
-        totalIncome={budget.totalIncome}
-        totalExpenses={budget.totalExpenses}
+        totalIncome={budget?.totalIncome ?? 0}
+        totalExpenses={budget?.totalExpenses ?? 0}
       />
 
       {/* Income & Expenses */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <IncomeSection
-          income={budget.income}
+          income={budget?.income ?? []}
           month={selectedMonth}
           onAdd={addIncome}
           onUpdate={updateIncome}
           onDelete={deleteIncome}
         />
         <ExpenseSection
-          expenses={budget.expenses}
+          expenses={budget?.expenses ?? []}
           month={selectedMonth}
           onAdd={addExpense}
           onUpdate={updateExpense}
@@ -142,15 +144,15 @@ export default function BudgetPage() {
 
       {/* Budget Bar */}
       <BudgetBar
-        totalIncome={budget.totalIncome}
-        totalExpenses={budget.totalExpenses}
+        totalIncome={budget?.totalIncome ?? 0}
+        totalExpenses={budget?.totalExpenses ?? 0}
       />
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <SpendingChart
           expensesByCategory={expensesByCategory}
-          totalExpenses={budget.totalExpenses}
+          totalExpenses={budget?.totalExpenses ?? 0}
         />
         <TrendChart budgets={budgets} />
       </div>
@@ -159,7 +161,7 @@ export default function BudgetPage() {
       <DebtTracker
         strategy={debtStrategy}
         onStrategyChange={setDebtStrategy}
-        availableForDebt={budget.availableForDebt}
+        availableForDebt={budget?.availableForDebt ?? 0}
       />
 
       {/* Credit Score & Savings */}

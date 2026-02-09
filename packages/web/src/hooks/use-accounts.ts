@@ -1,13 +1,14 @@
 'use client';
 
 /**
- * Custom hook for managing accounts
- * Provides CRUD operations on account data
+ * Custom hook for managing accounts — backed by Supabase
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { Account, AccountStatus, AccountCategory } from '@vindicate/shared';
-import { mockAccounts as initialAccounts, mockAccountsSummary } from '@/lib/mock-data';
+import { createBrowserClient } from '@/lib/supabase/client';
+import { useAuth } from '@/components/auth/auth-provider';
+import { accountFromRow, accountToRow } from '@/lib/supabase/mappers';
 
 export type NewAccount = Omit<Account, 'id' | 'createdAt' | 'updatedAt' | 'activityIds' | 'caseIds' | 'documentIds' | 'statusHistory'> & {
   statusHistory?: Account['statusHistory'];
@@ -31,155 +32,136 @@ export interface AccountSort {
   direction: SortDirection;
 }
 
-function generateId(): string {
-  return `acc-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
 export function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
-  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createBrowserClient();
+  const { user } = useAuth();
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Add a new account
-  const addAccount = useCallback((newAccount: NewAccount): Account => {
-    const now = new Date().toISOString();
-    const account: Account = {
-      ...newAccount,
-      id: generateId(),
-      activityIds: [],
-      caseIds: [],
-      documentIds: [],
-      statusHistory: newAccount.statusHistory || [],
-      createdAt: now,
-      updatedAt: now,
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    setError(null);
+    const { data, error: fetchError } = await supabase
+      .from('accounts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (fetchError) {
+      setError(fetchError.message);
+    } else {
+      setAccounts((data ?? []).map(accountFromRow));
+    }
+    setIsLoading(false);
+  }, [user, supabase]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
+  const addAccount = useCallback(async (newAccount: NewAccount): Promise<Account | null> => {
+    if (!user) return null;
+    const row = {
+      ...accountToRow(newAccount),
+      user_id: user.id,
+      status_history: newAccount.statusHistory ?? [],
+      activity_ids: [],
+      case_ids: [],
+      document_ids: [],
     };
-
-    setAccounts(prev => [...prev, account]);
+    const { data, error: insertError } = await supabase
+      .from('accounts')
+      .insert(row)
+      .select()
+      .single();
+    if (insertError) {
+      setError(insertError.message);
+      return null;
+    }
+    const account = accountFromRow(data);
+    setAccounts(prev => [account, ...prev]);
     return account;
-  }, []);
+  }, [user, supabase]);
 
-  // Update an existing account
-  const updateAccount = useCallback((id: string, updates: AccountUpdate): Account | null => {
-    let updatedAccount: Account | null = null;
+  const updateAccount = useCallback(async (id: string, updates: AccountUpdate): Promise<Account | null> => {
+    const row = accountToRow(updates);
+    const { data, error: updateError } = await supabase
+      .from('accounts')
+      .update(row)
+      .eq('id', id)
+      .select()
+      .single();
+    if (updateError) {
+      setError(updateError.message);
+      return null;
+    }
+    const account = accountFromRow(data);
+    setAccounts(prev => prev.map(a => a.id === id ? account : a));
+    return account;
+  }, [supabase]);
 
-    setAccounts(prev =>
-      prev.map(account => {
-        if (account.id === id) {
-          updatedAccount = {
-            ...account,
-            ...updates,
-            updatedAt: new Date().toISOString(),
-          };
-          return updatedAccount;
-        }
-        return account;
-      })
-    );
+  const deleteAccount = useCallback(async (id: string): Promise<boolean> => {
+    const { error: deleteError } = await supabase
+      .from('accounts')
+      .delete()
+      .eq('id', id);
+    if (deleteError) {
+      setError(deleteError.message);
+      return false;
+    }
+    setAccounts(prev => prev.filter(a => a.id !== id));
+    return true;
+  }, [supabase]);
 
-    return updatedAccount;
-  }, []);
-
-  // Delete an account
-  const deleteAccount = useCallback((id: string): boolean => {
-    let deleted = false;
-    setAccounts(prev => {
-      const newAccounts = prev.filter(account => {
-        if (account.id === id) {
-          deleted = true;
-          return false;
-        }
-        return true;
-      });
-      return newAccounts;
-    });
-    return deleted;
-  }, []);
-
-  // Get a single account by ID
   const getAccount = useCallback((id: string): Account | undefined => {
     return accounts.find(account => account.id === id);
   }, [accounts]);
 
-  // Update account status with history tracking
-  const updateAccountStatus = useCallback((id: string, newStatus: AccountStatus, reason?: string): Account | null => {
-    let updatedAccount: Account | null = null;
+  const updateAccountStatus = useCallback(async (id: string, newStatus: AccountStatus, reason?: string): Promise<Account | null> => {
+    const current = accounts.find(a => a.id === id);
+    if (!current || current.status === newStatus) return null;
+    const statusChange = {
+      from: current.status,
+      to: newStatus,
+      date: new Date().toISOString(),
+      reason,
+    };
+    return updateAccount(id, {
+      status: newStatus,
+      statusHistory: [...current.statusHistory, statusChange],
+    });
+  }, [accounts, updateAccount]);
 
-    setAccounts(prev =>
-      prev.map(account => {
-        if (account.id === id && account.status !== newStatus) {
-          const statusChange = {
-            from: account.status,
-            to: newStatus,
-            date: new Date().toISOString(),
-            reason,
-          };
+  const linkActivity = useCallback(async (accountId: string, activityId: string): Promise<void> => {
+    const current = accounts.find(a => a.id === accountId);
+    if (!current || current.activityIds.includes(activityId)) return;
+    await updateAccount(accountId, {
+      activityIds: [...current.activityIds, activityId],
+    });
+  }, [accounts, updateAccount]);
 
-          updatedAccount = {
-            ...account,
-            status: newStatus,
-            statusHistory: [...account.statusHistory, statusChange],
-            updatedAt: new Date().toISOString(),
-          };
-          return updatedAccount;
-        }
-        return account;
-      })
-    );
+  const linkCase = useCallback(async (accountId: string, caseId: string): Promise<void> => {
+    const current = accounts.find(a => a.id === accountId);
+    if (!current || current.caseIds.includes(caseId)) return;
+    await updateAccount(accountId, {
+      caseIds: [...current.caseIds, caseId],
+    });
+  }, [accounts, updateAccount]);
 
-    return updatedAccount;
-  }, []);
-
-  // Link an activity to an account
-  const linkActivity = useCallback((accountId: string, activityId: string): void => {
-    setAccounts(prev =>
-      prev.map(account => {
-        if (account.id === accountId && !account.activityIds.includes(activityId)) {
-          return {
-            ...account,
-            activityIds: [...account.activityIds, activityId],
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return account;
-      })
-    );
-  }, []);
-
-  // Link a case to an account
-  const linkCase = useCallback((accountId: string, caseId: string): void => {
-    setAccounts(prev =>
-      prev.map(account => {
-        if (account.id === accountId && !account.caseIds.includes(caseId)) {
-          return {
-            ...account,
-            caseIds: [...account.caseIds, caseId],
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return account;
-      })
-    );
-  }, []);
-
-  // Filter and sort accounts
   const getFilteredAccounts = useCallback((
     filters?: AccountFilters,
     sort?: AccountSort
   ): Account[] => {
     let result = [...accounts];
-
-    // Apply filters
     if (filters) {
       if (filters.status) {
         const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
         result = result.filter(a => statuses.includes(a.status));
       }
-
       if (filters.category) {
         const categories = Array.isArray(filters.category) ? filters.category : [filters.category];
         result = result.filter(a => a.category && categories.includes(a.category));
       }
-
       if (filters.search) {
         const search = filters.search.toLowerCase();
         result = result.filter(a =>
@@ -188,50 +170,30 @@ export function useAccounts() {
           a.accountNumber?.toLowerCase().includes(search)
         );
       }
-
       if (filters.minBalance !== undefined) {
         result = result.filter(a => a.currentBalance >= filters.minBalance!);
       }
-
       if (filters.maxBalance !== undefined) {
         result = result.filter(a => a.currentBalance <= filters.maxBalance!);
       }
     }
-
-    // Apply sort
     if (sort) {
       result.sort((a, b) => {
         let comparison = 0;
-
         switch (sort.field) {
-          case 'creditorName':
-            comparison = a.creditorName.localeCompare(b.creditorName);
-            break;
-          case 'currentBalance':
-            comparison = a.currentBalance - b.currentBalance;
-            break;
-          case 'originalBalance':
-            comparison = a.originalBalance - b.originalBalance;
-            break;
-          case 'dateOfLastActivity':
-            comparison = new Date(a.dateOfLastActivity).getTime() - new Date(b.dateOfLastActivity).getTime();
-            break;
-          case 'dateAddedToApp':
-            comparison = new Date(a.dateAddedToApp).getTime() - new Date(b.dateAddedToApp).getTime();
-            break;
-          case 'status':
-            comparison = a.status.localeCompare(b.status);
-            break;
+          case 'creditorName': comparison = a.creditorName.localeCompare(b.creditorName); break;
+          case 'currentBalance': comparison = a.currentBalance - b.currentBalance; break;
+          case 'originalBalance': comparison = a.originalBalance - b.originalBalance; break;
+          case 'dateOfLastActivity': comparison = new Date(a.dateOfLastActivity).getTime() - new Date(b.dateOfLastActivity).getTime(); break;
+          case 'dateAddedToApp': comparison = new Date(a.dateAddedToApp).getTime() - new Date(b.dateAddedToApp).getTime(); break;
+          case 'status': comparison = a.status.localeCompare(b.status); break;
         }
-
         return sort.direction === 'desc' ? -comparison : comparison;
       });
     }
-
     return result;
   }, [accounts]);
 
-  // Computed summary
   const summary = useMemo(() => ({
     totalOriginalDebt: accounts.reduce((sum, acc) => sum + acc.originalBalance, 0),
     totalCurrentDebt: accounts.reduce((sum, acc) => sum + acc.currentBalance, 0),

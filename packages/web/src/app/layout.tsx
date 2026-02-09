@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from '@/components/auth/auth-provider';
 import { AppShell } from '@/components/layout/app-shell';
 import { inter } from '@/lib/fonts';
 import './globals.css';
@@ -44,11 +45,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Skip to content link for accessibility */}
-          <a href="#main-content" className="skip-to-content">
-            Skip to main content
-          </a>
-          <AppShell>{children}</AppShell>
+          <AuthProvider>
+            {/* Skip to content link for accessibility */}
+            <a href="#main-content" className="skip-to-content">
+              Skip to main content
+            </a>
+            <AppShell>{children}</AppShell>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

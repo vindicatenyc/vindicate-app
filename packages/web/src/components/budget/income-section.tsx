@@ -17,9 +17,9 @@ import type { NewIncomeEntry } from '@/hooks/use-budget';
 interface IncomeSectionProps {
   income: IncomeEntry[];
   month: string;
-  onAdd: (month: string, entry: NewIncomeEntry) => IncomeEntry | null;
-  onUpdate: (month: string, id: string, updates: Partial<IncomeEntry>) => void;
-  onDelete: (month: string, id: string) => void;
+  onAdd: (month: string, entry: NewIncomeEntry) => IncomeEntry | null | Promise<IncomeEntry | null>;
+  onUpdate: (month: string, id: string, updates: Partial<IncomeEntry>) => void | Promise<void>;
+  onDelete: (month: string, id: string) => void | Promise<void>;
   className?: string;
 }
 

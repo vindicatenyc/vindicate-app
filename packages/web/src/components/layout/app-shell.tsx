@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { MobileNav } from './mobile-nav';
@@ -13,6 +14,13 @@ const VinnyChatPanel = dynamic(
 );
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  // Auth pages use their own layout — skip the app shell
+  if (pathname.startsWith('/auth')) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Onboarding overlay (first visit only) */}

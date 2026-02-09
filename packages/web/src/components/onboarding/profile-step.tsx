@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { ArrowRight, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/components/auth/auth-provider';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 const US_STATES = [
   'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
@@ -20,10 +22,17 @@ interface ProfileStepProps {
 export function ProfileStep({ onNext }: ProfileStepProps) {
   const setUserState = useAppStore((s) => s.setUserState);
   const currentState = useAppStore((s) => s.userState);
+  const { user } = useAuth();
   const [selectedState, setSelectedState] = useState(currentState || 'NY');
 
   const handleContinue = () => {
+    // Save to Zustand for immediate UI use
     setUserState(selectedState);
+    // Save to profiles table in Supabase
+    if (user) {
+      const supabase = createBrowserClient();
+      supabase.from('profiles').update({ state: selectedState }).eq('id', user.id).then();
+    }
     onNext();
   };
 

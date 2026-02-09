@@ -11,9 +11,9 @@ import { SavingsGoalForm } from './savings-goal-form';
 
 interface SavingsGoalsProps {
   goals: SavingsGoal[];
-  onAdd: (goal: NewSavingsGoal) => SavingsGoal;
-  onUpdate: (id: string, updates: Partial<SavingsGoal>) => void;
-  onDelete: (id: string) => void;
+  onAdd: (goal: NewSavingsGoal) => SavingsGoal | null | Promise<SavingsGoal | null>;
+  onUpdate: (id: string, updates: Partial<SavingsGoal>) => void | Promise<void>;
+  onDelete: (id: string) => void | Promise<void>;
   className?: string;
 }
 

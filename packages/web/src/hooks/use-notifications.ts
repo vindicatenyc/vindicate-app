@@ -1,111 +1,112 @@
 'use client';
 
 /**
- * Custom hook for managing notifications
- * Provides access to notification state and actions
+ * Custom hook for managing notifications — backed by Supabase
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { Notification, NotificationType, NotificationPriority } from '@vindicate/shared';
-import { mockNotifications as initialNotifications } from '@/lib/mock-data';
+import { createBrowserClient } from '@/lib/supabase/client';
+import { useAuth } from '@/components/auth/auth-provider';
+import { notificationFromRow, notificationToRow } from '@/lib/supabase/mappers';
 
 export type NewNotification = Omit<Notification, 'id' | 'createdAt' | 'isRead' | 'isDismissed'>;
 
-function generateId(): string {
-  return `notif-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
-  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createBrowserClient();
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Add a new notification
-  const addNotification = useCallback((notification: NewNotification): Notification => {
-    const newNotification: Notification = {
-      ...notification,
-      id: generateId(),
-      isRead: false,
-      isDismissed: false,
-      createdAt: new Date().toISOString(),
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    setError(null);
+    const { data, error: fetchError } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (fetchError) {
+      setError(fetchError.message);
+    } else {
+      setNotifications((data ?? []).map(notificationFromRow));
+    }
+    setIsLoading(false);
+  }, [user, supabase]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  const addNotification = useCallback(async (notification: NewNotification): Promise<Notification | null> => {
+    if (!user) return null;
+    const row = {
+      ...notificationToRow(notification),
+      user_id: user.id,
+      is_read: false,
+      is_dismissed: false,
     };
+    const { data, error: insertError } = await supabase
+      .from('notifications')
+      .insert(row)
+      .select()
+      .single();
+    if (insertError) { setError(insertError.message); return null; }
+    const n = notificationFromRow(data);
+    setNotifications(prev => [n, ...prev]);
+    return n;
+  }, [user, supabase]);
 
-    setNotifications(prev => [newNotification, ...prev]);
-    return newNotification;
-  }, []);
-
-  // Mark a notification as read
-  const markAsRead = useCallback((id: string): void => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id
-          ? { ...notification, isRead: true, readAt: new Date().toISOString() }
-          : notification
-      )
-    );
-  }, []);
-
-  // Mark all notifications as read
-  const markAllAsRead = useCallback((): void => {
+  const markAsRead = useCallback(async (id: string): Promise<void> => {
     const now = new Date().toISOString();
-    setNotifications(prev =>
-      prev.map(notification =>
-        !notification.isRead
-          ? { ...notification, isRead: true, readAt: now }
-          : notification
-      )
-    );
-  }, []);
+    await supabase.from('notifications').update({ is_read: true, read_at: now }).eq('id', id);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true, readAt: now } : n));
+  }, [supabase]);
 
-  // Dismiss a notification
-  const dismiss = useCallback((id: string): void => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id
-          ? { ...notification, isDismissed: true }
-          : notification
-      )
-    );
-  }, []);
+  const markAllAsRead = useCallback(async (): Promise<void> => {
+    if (!user) return;
+    const now = new Date().toISOString();
+    await supabase.from('notifications').update({ is_read: true, read_at: now }).eq('is_read', false);
+    setNotifications(prev => prev.map(n => !n.isRead ? { ...n, isRead: true, readAt: now } : n));
+  }, [user, supabase]);
 
-  // Dismiss all notifications
-  const dismissAll = useCallback((): void => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, isDismissed: true }))
-    );
-  }, []);
+  const dismiss = useCallback(async (id: string): Promise<void> => {
+    await supabase.from('notifications').update({ is_dismissed: true }).eq('id', id);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isDismissed: true } : n));
+  }, [supabase]);
 
-  // Delete a notification permanently
-  const deleteNotification = useCallback((id: string): void => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  }, []);
+  const dismissAll = useCallback(async (): Promise<void> => {
+    if (!user) return;
+    await supabase.from('notifications').update({ is_dismissed: true }).eq('is_dismissed', false);
+    setNotifications(prev => prev.map(n => ({ ...n, isDismissed: true })));
+  }, [user, supabase]);
 
-  // Get unread notifications
+  const deleteNotification = useCallback(async (id: string): Promise<void> => {
+    await supabase.from('notifications').delete().eq('id', id);
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  }, [supabase]);
+
   const getUnread = useCallback((): Notification[] => {
     return notifications.filter(n => !n.isRead && !n.isDismissed);
   }, [notifications]);
 
-  // Get notifications by type
   const getByType = useCallback((type: NotificationType): Notification[] => {
     return notifications.filter(n => n.type === type && !n.isDismissed);
   }, [notifications]);
 
-  // Get notifications by priority
   const getByPriority = useCallback((priority: NotificationPriority): Notification[] => {
     return notifications.filter(n => n.priority === priority && !n.isDismissed);
   }, [notifications]);
 
-  // Get notifications for an account
   const getForAccount = useCallback((accountId: string): Notification[] => {
     return notifications.filter(n => n.accountId === accountId && !n.isDismissed);
   }, [notifications]);
 
-  // Get notifications for a case
   const getForCase = useCallback((caseId: string): Notification[] => {
     return notifications.filter(n => n.caseId === caseId && !n.isDismissed);
   }, [notifications]);
 
-  // Get recent notifications
   const getRecent = useCallback((limit: number = 10): Notification[] => {
     return [...notifications]
       .filter(n => !n.isDismissed)
@@ -113,57 +114,27 @@ export function useNotifications() {
       .slice(0, limit);
   }, [notifications]);
 
-  // Get high-priority unread notifications
   const getUrgent = useCallback((): Notification[] => {
-    return notifications.filter(
-      n => !n.isRead && !n.isDismissed && ['high', 'urgent'].includes(n.priority)
-    );
+    return notifications.filter(n => !n.isRead && !n.isDismissed && ['high', 'urgent'].includes(n.priority));
   }, [notifications]);
 
-  // Computed values
-  const unreadCount = useMemo(
-    () => notifications.filter(n => !n.isRead && !n.isDismissed).length,
-    [notifications]
-  );
-
-  const urgentCount = useMemo(
-    () => notifications.filter(
-      n => !n.isRead && !n.isDismissed && ['high', 'urgent'].includes(n.priority)
-    ).length,
-    [notifications]
-  );
+  const unreadCount = useMemo(() => notifications.filter(n => !n.isRead && !n.isDismissed).length, [notifications]);
+  const urgentCount = useMemo(() => notifications.filter(n => !n.isRead && !n.isDismissed && ['high', 'urgent'].includes(n.priority)).length, [notifications]);
 
   const stats = useMemo(() => ({
     total: notifications.length,
     unread: unreadCount,
     urgent: urgentCount,
     byType: notifications.reduce((acc, n) => {
-      if (!n.isDismissed) {
-        acc[n.type] = (acc[n.type] || 0) + 1;
-      }
+      if (!n.isDismissed) acc[n.type] = (acc[n.type] || 0) + 1;
       return acc;
     }, {} as Record<NotificationType, number>),
   }), [notifications, unreadCount, urgentCount]);
 
   return {
     notifications: notifications.filter(n => !n.isDismissed),
-    isLoading,
-    error,
-    unreadCount,
-    urgentCount,
-    stats,
-    addNotification,
-    markAsRead,
-    markAllAsRead,
-    dismiss,
-    dismissAll,
-    deleteNotification,
-    getUnread,
-    getByType,
-    getByPriority,
-    getForAccount,
-    getForCase,
-    getRecent,
-    getUrgent,
+    isLoading, error, unreadCount, urgentCount, stats,
+    addNotification, markAsRead, markAllAsRead, dismiss, dismissAll, deleteNotification,
+    getUnread, getByType, getByPriority, getForAccount, getForCase, getRecent, getUrgent,
   };
 }

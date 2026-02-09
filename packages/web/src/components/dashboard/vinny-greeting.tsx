@@ -5,6 +5,7 @@ import { Bot, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useAuth } from '@/components/auth/auth-provider';
 import { useVinnyChatActions } from '@/stores/app-store';
 import { getTimeOfDay, getGreeting, generateContextualTip } from '@/lib/vinny/greeting-generator';
 
@@ -12,6 +13,7 @@ export function VinnyGreeting() {
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { accounts, summary } = useAccounts();
+  const { user } = useAuth();
   const { openVinnyChat } = useVinnyChatActions();
 
   useEffect(() => {
@@ -19,7 +21,9 @@ export function VinnyGreeting() {
   }, []);
 
   const timeOfDay = getTimeOfDay();
+  const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || '';
   const greeting = mounted ? getGreeting(timeOfDay) : '';
+  const personalGreeting = displayName ? `${greeting} ${displayName}!` : `${greeting}!`;
 
   const tip = useMemo(
     () =>
@@ -63,7 +67,7 @@ export function VinnyGreeting() {
 
         <div className="min-w-0 flex-1 pr-6">
           <h2 className="text-base font-semibold text-foreground">
-            {greeting} <span className="text-[hsl(var(--accent))]">Vinny here.</span>
+            {personalGreeting} <span className="text-[hsl(var(--accent))]">Vinny here.</span>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
             {tip}

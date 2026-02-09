@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore, useOnboarding } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/components/auth/auth-provider';
+import { createBrowserClient } from '@/lib/supabase/client';
 import { WelcomeStep } from './welcome-step';
 import { ProfileStep } from './profile-step';
 import { ImportStep } from './import-step';
@@ -16,31 +18,55 @@ const stepVariants = {
 };
 
 export function OnboardingWizard() {
-  const onboarding = useOnboarding();
-  const setOnboardingStep = useAppStore((s) => s.setOnboardingStep);
   const completeOnboarding = useAppStore((s) => s.completeOnboarding);
+  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
 
-  // Wait for hydration to avoid flash
+  // Check profile from DB on mount
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (!user) return;
+    const supabase = createBrowserClient();
+    supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }: { data: { onboarding_complete?: boolean } | null }) => {
+        setOnboardingComplete(data?.onboarding_complete ?? false);
+      });
+  }, [user]);
 
   const handleNext = useCallback(() => {
-    const next = onboarding.currentStep + 1;
+    const next = currentStep + 1;
     if (next >= TOTAL_STEPS) {
-      completeOnboarding();
+      // Mark onboarding complete in DB
+      if (user) {
+        const supabase = createBrowserClient();
+        supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id).then(() => {
+          setOnboardingComplete(true);
+          completeOnboarding();
+        });
+      }
     } else {
-      setOnboardingStep(next);
+      setCurrentStep(next);
     }
-  }, [onboarding.currentStep, setOnboardingStep, completeOnboarding]);
+  }, [currentStep, user, completeOnboarding]);
 
   const handleComplete = useCallback(() => {
-    completeOnboarding();
-  }, [completeOnboarding]);
+    if (user) {
+      const supabase = createBrowserClient();
+      supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id).then(() => {
+        setOnboardingComplete(true);
+        completeOnboarding();
+      });
+    }
+  }, [user, completeOnboarding]);
 
-  // Don't render until hydrated, or if already completed
-  if (!mounted || onboarding.hasCompleted) return null;
+  // Don't render until hydrated, or if already completed, or still loading
+  if (!mounted || onboardingComplete === null || onboardingComplete) return null;
 
   // Check for reduced motion
   const prefersReducedMotion =
@@ -61,14 +87,14 @@ export function OnboardingWizard() {
             <div
               key={i}
               className={`h-2 rounded-full transition-all duration-300 ${
-                i === onboarding.currentStep
+                i === currentStep
                   ? 'w-8 bg-primary'
-                  : i < onboarding.currentStep
+                  : i < currentStep
                     ? 'w-2 bg-primary/50'
                     : 'w-2 bg-muted'
               }`}
               aria-label={`Step ${i + 1} of ${TOTAL_STEPS}${
-                i === onboarding.currentStep ? ' (current)' : ''
+                i === currentStep ? ' (current)' : ''
               }`}
             />
           ))}
@@ -78,20 +104,20 @@ export function OnboardingWizard() {
         <div className="rounded-2xl border border-border bg-card shadow-lg overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
-              key={onboarding.currentStep}
+              key={currentStep}
               variants={prefersReducedMotion ? undefined : stepVariants}
               initial={prefersReducedMotion ? undefined : 'enter'}
               animate={prefersReducedMotion ? undefined : 'center'}
               exit={prefersReducedMotion ? undefined : 'exit'}
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {onboarding.currentStep === 0 && (
+              {currentStep === 0 && (
                 <WelcomeStep onNext={handleNext} />
               )}
-              {onboarding.currentStep === 1 && (
+              {currentStep === 1 && (
                 <ProfileStep onNext={handleNext} />
               )}
-              {onboarding.currentStep === 2 && (
+              {currentStep === 2 && (
                 <ImportStep onComplete={handleComplete} />
               )}
             </motion.div>

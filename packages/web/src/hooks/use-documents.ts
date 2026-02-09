@@ -1,110 +1,68 @@
 'use client';
 
 /**
- * Custom hook for managing documents
- * Provides CRUD operations on document data (mock)
+ * Custom hook for managing documents — backed by Supabase
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { Document, DocumentType } from '@vindicate/shared';
-
-const MOCK_DOCUMENTS: Document[] = [
-  {
-    id: 'doc-001',
-    name: 'Debt Validation Letter - IC System.pdf',
-    type: 'validation-letter',
-    mimeType: 'application/pdf',
-    size: 245000,
-    url: '#',
-    accountId: 'acc-001-nyu-medical',
-    uploadedAt: '2026-01-20T10:15:00Z',
-    description: 'Debt validation request sent to IC System via certified mail',
-    tags: ['nyu', 'validation'],
-  },
-  {
-    id: 'doc-002',
-    name: 'Equifax Dispute Confirmation.pdf',
-    type: 'dispute-letter',
-    mimeType: 'application/pdf',
-    size: 189000,
-    url: '#',
-    accountId: 'acc-003-synchrony',
-    caseId: 'case-001',
-    uploadedAt: '2026-01-20T15:30:00Z',
-    description: 'Confirmation of dispute filed with Equifax',
-    tags: ['equifax', 'dispute'],
-  },
-  {
-    id: 'doc-003',
-    name: 'Capital One Payment Plan Agreement.pdf',
-    type: 'settlement-agreement',
-    mimeType: 'application/pdf',
-    size: 312000,
-    url: '#',
-    accountId: 'acc-002-capital-one',
-    uploadedAt: '2025-10-15T12:00:00Z',
-    description: 'Payment plan terms: $175/month for 18 months at 0% interest',
-    tags: ['capital-one', 'payment-plan'],
-  },
-  {
-    id: 'doc-004',
-    name: 'ConEd Settlement Receipt.pdf',
-    type: 'payment-receipt',
-    mimeType: 'application/pdf',
-    size: 98000,
-    url: '#',
-    accountId: 'acc-004-con-edison',
-    uploadedAt: '2025-12-20T11:30:00Z',
-    description: 'Settlement payment confirmation - $534 paid',
-    tags: ['con-edison', 'settled'],
-  },
-  {
-    id: 'doc-005',
-    name: 'IC System Validation Response.pdf',
-    type: 'correspondence',
-    mimeType: 'application/pdf',
-    size: 456000,
-    url: '#',
-    accountId: 'acc-001-nyu-medical',
-    caseId: 'case-002',
-    uploadedAt: '2026-02-03T18:30:00Z',
-    description: 'Validation documents received from IC System',
-    tags: ['nyu', 'validation-response'],
-  },
-];
+import { createBrowserClient } from '@/lib/supabase/client';
+import { useAuth } from '@/components/auth/auth-provider';
+import { documentFromRow, documentToRow } from '@/lib/supabase/mappers';
 
 export type NewDocument = Omit<Document, 'id'>;
 
-function generateId(): string {
-  return `doc-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
 export function useDocuments() {
-  const [documents, setDocuments] = useState<Document[]>(MOCK_DOCUMENTS);
+  const supabase = createBrowserClient();
+  const { user } = useAuth();
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const addDocument = useCallback((doc: NewDocument): Document => {
-    const newDoc: Document = {
-      ...doc,
-      id: generateId(),
+  const fetchDocuments = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    setError(null);
+    const { data, error: fetchError } = await supabase
+      .from('documents')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (fetchError) {
+      setError(fetchError.message);
+    } else {
+      setDocuments((data ?? []).map(documentFromRow));
+    }
+    setIsLoading(false);
+  }, [user, supabase]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
+
+  const addDocument = useCallback(async (doc: NewDocument): Promise<Document | null> => {
+    if (!user) return null;
+    const row = {
+      ...documentToRow(doc),
+      user_id: user.id,
+      uploaded_at: doc.uploadedAt || new Date().toISOString(),
     };
-    setDocuments(prev => [...prev, newDoc]);
-    return newDoc;
-  }, []);
+    const { data, error: insertError } = await supabase
+      .from('documents')
+      .insert(row)
+      .select()
+      .single();
+    if (insertError) { setError(insertError.message); return null; }
+    const document = documentFromRow(data);
+    setDocuments(prev => [document, ...prev]);
+    return document;
+  }, [user, supabase]);
 
-  const deleteDocument = useCallback((id: string): boolean => {
-    let deleted = false;
-    setDocuments(prev => {
-      const result = prev.filter(doc => {
-        if (doc.id === id) {
-          deleted = true;
-          return false;
-        }
-        return true;
-      });
-      return result;
-    });
-    return deleted;
-  }, []);
+  const deleteDocument = useCallback(async (id: string): Promise<boolean> => {
+    const { error: deleteError } = await supabase.from('documents').delete().eq('id', id);
+    if (deleteError) { setError(deleteError.message); return false; }
+    setDocuments(prev => prev.filter(d => d.id !== id));
+    return true;
+  }, [supabase]);
 
   const getDocument = useCallback((id: string): Document | undefined => {
     return documents.find(doc => doc.id === id);
@@ -133,13 +91,8 @@ export function useDocuments() {
   }), [documents]);
 
   return {
-    documents,
-    stats,
-    addDocument,
-    deleteDocument,
-    getDocument,
-    getFilteredDocuments,
-    getDocumentsForAccount,
-    getDocumentsForCase,
+    documents, isLoading, error, stats,
+    addDocument, deleteDocument, getDocument,
+    getFilteredDocuments, getDocumentsForAccount, getDocumentsForCase,
   };
 }
