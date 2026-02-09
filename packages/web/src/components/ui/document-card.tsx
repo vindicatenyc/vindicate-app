@@ -17,9 +17,14 @@ import {
   BadgeDollarSign,
   UserCheck,
   HeartPulse,
+  AlertCircle,
+  RotateCw,
+  Sparkles,
+  Eye,
+  Clock,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { DocumentType } from '@vindicate/shared';
+import type { DocumentType, ProcessingStatus } from '@vindicate/shared';
 import { DOCUMENT_TYPE_CONFIG } from '@vindicate/shared';
 import { cn } from '@/lib/utils';
 
@@ -55,12 +60,107 @@ export interface DocumentCardProps {
   size: number;
   url?: string;
   uploadedAt: string;
+  processingStatus?: ProcessingStatus;
+  extractionConfidence?: number;
+  autoClassifiedType?: string;
   onDownload?: () => Promise<string | null>;
+  onRetry?: () => void;
+  onViewData?: () => void;
   className?: string;
 }
 
+function ProcessingBadge({
+  status,
+  confidence,
+  onRetry,
+  onViewData,
+}: {
+  status?: ProcessingStatus;
+  confidence?: number;
+  onRetry?: () => void;
+  onViewData?: () => void;
+}) {
+  if (!status || status === 'skipped') return null;
+
+  switch (status) {
+    case 'pending':
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <Clock className="h-2.5 w-2.5" />
+          Pending
+        </span>
+      );
+    case 'processing':
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary animate-pulse">
+          <Loader2 className="h-2.5 w-2.5 animate-spin" />
+          Processing...
+        </span>
+      );
+    case 'completed':
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-400">
+            <Sparkles className="h-2.5 w-2.5" />
+            Extracted
+            {confidence != null && confidence < 1 && (
+              <span className="opacity-70">{Math.round(confidence * 100)}%</span>
+            )}
+          </span>
+          {onViewData && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onViewData(); }}
+              className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/20 transition-colors"
+            >
+              <Eye className="h-2.5 w-2.5" />
+              View
+            </button>
+          )}
+        </div>
+      );
+    case 'failed':
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-medium text-red-700 dark:text-red-400">
+            <AlertCircle className="h-2.5 w-2.5" />
+            Failed
+          </span>
+          {onRetry && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onRetry(); }}
+              className="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-medium text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+            >
+              <RotateCw className="h-2.5 w-2.5" />
+              Retry
+            </button>
+          )}
+        </div>
+      );
+    case 'needs_review':
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
+            <AlertCircle className="h-2.5 w-2.5" />
+            Review needed
+          </span>
+          {onViewData && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onViewData(); }}
+              className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
+            >
+              <Eye className="h-2.5 w-2.5" />
+              Review
+            </button>
+          )}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
 export function DocumentCard({
-  name, type, mimeType, size, url, uploadedAt, onDownload, className,
+  name, type, mimeType, size, url, uploadedAt, processingStatus, extractionConfidence, autoClassifiedType, onDownload, onRetry, onViewData, className,
 }: DocumentCardProps) {
   const config = DOCUMENT_TYPE_CONFIG[type];
   const IconComponent = DOC_ICON_MAP[type] ?? File;
@@ -76,7 +176,6 @@ export function DocumentCard({
     try {
       const signedUrl = await onDownload();
       if (signedUrl) {
-        // For images, show preview; for others, trigger download
         if (isImage) {
           setPreviewUrl(prev => (prev ? null : signedUrl));
         } else {
@@ -108,9 +207,24 @@ export function DocumentCard({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-medium text-foreground">{name}</h3>
-          <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground mt-1">
-            {config.label}
-          </span>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              {config.label}
+            </span>
+            {autoClassifiedType && autoClassifiedType !== type && (
+              <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                AI: {DOCUMENT_TYPE_CONFIG[autoClassifiedType as DocumentType]?.label ?? autoClassifiedType}
+              </span>
+            )}
+          </div>
+          <div className="mt-1.5">
+            <ProcessingBadge
+              status={processingStatus}
+              confidence={extractionConfidence}
+              onRetry={onRetry}
+              onViewData={onViewData}
+            />
+          </div>
           <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
             <span>{formatFileSize(size)}</span>
             <span>

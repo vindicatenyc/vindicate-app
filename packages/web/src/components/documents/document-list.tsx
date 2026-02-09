@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { FileText, Trash2 } from 'lucide-react';
-import type { DocumentType } from '@vindicate/shared';
+import type { Document, DocumentType } from '@vindicate/shared';
 import { DOCUMENT_TYPE_CONFIG } from '@vindicate/shared';
 import { useDocuments } from '@/hooks/use-documents';
 import { DocumentCard } from '@/components/ui/document-card';
+import { ExtractionReview } from '@/components/documents/extraction-review';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,13 +15,18 @@ const INPUT_CLASS =
   'h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1';
 
 const ALL_DOCUMENT_TYPES: DocumentType[] = [
+  'credit-report',
+  'bank-statement',
+  'tax-document',
+  'income-verification',
+  'medical-bill',
   'validation-letter',
   'dispute-letter',
   'court-document',
   'payment-receipt',
-  'credit-report',
   'correspondence',
   'settlement-agreement',
+  'identity-document',
   'other',
 ];
 
@@ -31,8 +37,19 @@ interface DocumentListProps {
 }
 
 export function DocumentList({ accountId, caseId, className }: DocumentListProps) {
-  const { documents, deleteDocument, downloadDocument, getDocumentsForAccount, getDocumentsForCase } = useDocuments();
+  const {
+    documents,
+    deleteDocument,
+    downloadDocument,
+    reprocessDocument,
+    normalizeDocument,
+    skipDocument,
+    getDocumentsForAccount,
+    getDocumentsForCase,
+  } = useDocuments();
+
   const [filterType, setFilterType] = useState<DocumentType | ''>('');
+  const [reviewDoc, setReviewDoc] = useState<Document | null>(null);
 
   const baseDocuments = useMemo(() => {
     if (accountId) return getDocumentsForAccount(accountId);
@@ -50,6 +67,32 @@ export function DocumentList({ accountId, caseId, className }: DocumentListProps
       deleteDocument(id);
     }
   };
+
+  const handleViewData = useCallback((doc: Document) => {
+    setReviewDoc(doc);
+  }, []);
+
+  const handleRetry = useCallback(async (documentId: string) => {
+    await reprocessDocument(documentId, 'gpt-4.1');
+  }, [reprocessDocument]);
+
+  const handleNormalize = useCallback(async (documentId: string, selections?: Record<string, unknown>) => {
+    await normalizeDocument(documentId, selections);
+  }, [normalizeDocument]);
+
+  const handleReprocess = useCallback(async (documentId: string) => {
+    await reprocessDocument(documentId, 'gpt-4.1');
+  }, [reprocessDocument]);
+
+  const handleSkip = useCallback((documentId: string) => {
+    skipDocument(documentId);
+  }, [skipDocument]);
+
+  // Keep review doc in sync with documents state (e.g. after reprocess)
+  const activeReviewDoc = useMemo(() => {
+    if (!reviewDoc) return null;
+    return documents.find(d => d.id === reviewDoc.id) ?? reviewDoc;
+  }, [reviewDoc, documents]);
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -87,7 +130,12 @@ export function DocumentList({ accountId, caseId, className }: DocumentListProps
                 size={doc.size}
                 url={doc.url}
                 uploadedAt={doc.uploadedAt}
+                processingStatus={doc.processingStatus}
+                extractionConfidence={doc.extractionConfidence}
+                autoClassifiedType={doc.autoClassifiedType}
                 onDownload={() => downloadDocument(doc)}
+                onRetry={() => handleRetry(doc.id)}
+                onViewData={() => handleViewData(doc)}
               />
               <Button
                 variant="ghost"
@@ -106,6 +154,18 @@ export function DocumentList({ accountId, caseId, className }: DocumentListProps
           icon={FileText}
           title="No documents"
           description="Upload documents to keep records of correspondence, receipts, and legal filings."
+        />
+      )}
+
+      {/* Extraction Review Sheet */}
+      {activeReviewDoc && (
+        <ExtractionReview
+          document={activeReviewDoc}
+          open={!!reviewDoc}
+          onOpenChange={(open) => { if (!open) setReviewDoc(null); }}
+          onNormalize={handleNormalize}
+          onReprocess={handleReprocess}
+          onSkip={handleSkip}
         />
       )}
     </div>

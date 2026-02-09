@@ -364,6 +364,59 @@ export function useDocuments() {
     [updateDocumentInState]
   );
 
+  // -------------------------------------------------------------------------
+  // Normalization methods
+  // -------------------------------------------------------------------------
+
+  const normalizeDocument = useCallback(
+    async (documentId: string, selections?: Record<string, unknown>) => {
+      try {
+        const res = await fetch('/api/documents/normalize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ documentId, selections }),
+        });
+
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({ error: 'Normalization failed' }));
+          throw new Error(errBody.error ?? 'Normalization failed');
+        }
+
+        const result = await res.json();
+
+        // Update the document's processing status to completed
+        updateDocumentInState(documentId, {
+          processingStatus: 'completed' as ProcessingStatus,
+        });
+
+        // Refresh full document list to get latest state
+        await fetchDocuments();
+
+        return result;
+      } catch (err) {
+        throw err;
+      }
+    },
+    [updateDocumentInState, fetchDocuments]
+  );
+
+  const skipDocument = useCallback(
+    (documentId: string) => {
+      // Mark as skipped locally — no server call needed
+      updateDocumentInState(documentId, {
+        processingStatus: 'skipped' as ProcessingStatus,
+      });
+
+      // Also update in DB
+      supabase
+        .from('documents')
+        .update({ processing_status: 'skipped' })
+        .eq('id', documentId)
+        .then(() => { /* fire-and-forget */ });
+    },
+    [updateDocumentInState, supabase]
+  );
+
   const stats = useMemo(() => ({
     totalDocuments: documents.length,
     totalSize: documents.reduce((sum, doc) => sum + doc.size, 0),
@@ -379,5 +432,7 @@ export function useDocuments() {
     getDocument, getFilteredDocuments, getDocumentsForAccount, getDocumentsForCase,
     clearUploadProgress, removeUploadItem,
     processDocument, reprocessDocument,
+    normalizeDocument, skipDocument,
+    fetchDocuments,
   };
 }
