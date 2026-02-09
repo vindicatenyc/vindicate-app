@@ -34,6 +34,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
+  const isAuthCallback = request.nextUrl.pathname === "/auth/callback";
 
   // If no session and not on auth page, redirect to login
   if (!user && !isAuthPage) {
@@ -42,8 +43,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If valid session and on auth page, redirect to dashboard
-  if (user && isAuthPage) {
+  // If valid session and on auth page (but NOT callback), redirect to dashboard
+  if (user && isAuthPage && !isAuthCallback) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
