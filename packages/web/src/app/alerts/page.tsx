@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Settings, Filter } from 'lucide-react';
+import { fadeIn } from '@/lib/animations';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
@@ -52,7 +54,7 @@ export default function AlertsPage() {
   }, [notifications]);
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <PageHeader
         title="Notification Center"
         description="Stay on top of deadlines, payments, and updates."
@@ -143,6 +145,6 @@ export default function AlertsPage() {
           }
         />
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -359,15 +359,15 @@ function FormField({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <label className="mb-1.5 block text-sm font-medium text-foreground">
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
         {required && <span className="text-danger ml-0.5">*</span>}
-      </label>
+      </span>
       {children}
       {error && (
         <p className="mt-1 text-xs text-danger" role="alert">{error}</p>
       )}
-    </div>
+    </label>
   );
 }

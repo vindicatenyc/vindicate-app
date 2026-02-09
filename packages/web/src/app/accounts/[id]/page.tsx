@@ -1,16 +1,27 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { fadeIn } from '@/lib/animations';
 import { useAccounts } from '@/hooks/use-accounts';
 import { AccountHeader } from '@/components/accounts/detail/account-header';
 import { AccountOverview } from '@/components/accounts/detail/account-overview';
 import { AccountActivityTab } from '@/components/accounts/detail/account-activity-tab';
-import { AccountDocumentsTab } from '@/components/accounts/detail/account-documents-tab';
-import { AccountPaymentTab } from '@/components/accounts/detail/account-payment-tab';
 import { VinnyTipCard } from '@/components/vinny/vinny-tip-card';
 import { generateAccountTip } from '@/lib/vinny/tip-generator';
 import { cn } from '@/lib/utils';
+
+const AccountDocumentsTab = dynamic(
+  () => import('@/components/accounts/detail/account-documents-tab').then(mod => ({ default: mod.AccountDocumentsTab })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
+
+const AccountPaymentTab = dynamic(
+  () => import('@/components/accounts/detail/account-payment-tab').then(mod => ({ default: mod.AccountPaymentTab })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -55,7 +66,7 @@ export default function AccountDetailPage({
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <AccountHeader account={account} />
 
       {/* Vinny contextual tip */}
@@ -108,6 +119,6 @@ export default function AccountDetailPage({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

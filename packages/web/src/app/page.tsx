@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/ui/page-header';
 import {
   FinancialHealthCards,
@@ -12,6 +13,7 @@ import {
 import { VinnyTipCard } from '@/components/vinny/vinny-tip-card';
 import { useAccounts } from '@/hooks/use-accounts';
 import { generateDashboardTip } from '@/lib/vinny/tip-generator';
+import { fadeIn, staggerContainer, staggerItem } from '@/lib/animations';
 
 export default function DashboardPage() {
   const { accounts } = useAccounts();
@@ -19,7 +21,12 @@ export default function DashboardPage() {
   const tip = useMemo(() => generateDashboardTip(accounts), [accounts]);
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+    >
       <PageHeader
         title="Dashboard"
         description="Your financial recovery overview at a glance."
@@ -36,14 +43,19 @@ export default function DashboardPage() {
       <FinancialHealthCards />
 
       {/* Progress ring + Activity feed side by side on desktop */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+      <motion.div
+        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div className="lg:col-span-1" variants={staggerItem}>
           <DebtProgressRing />
-        </div>
-        <div className="lg:col-span-2">
+        </motion.div>
+        <motion.div className="lg:col-span-2" variants={staggerItem}>
           <RecentActivity />
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -13,6 +13,7 @@ export * from './select';
 export * from './separator';
 export * from './scroll-area';
 export * from './sheet';
+export * from './skeleton';
 
 // Custom Vindicate components
 export * from './status-badge';
@@ -26,3 +27,4 @@ export * from './countdown-badge';
 export * from './document-card';
 export * from './wizard-stepper';
 export * from './urgency-indicator';
+export { Confetti } from './confetti';

@@ -324,7 +324,7 @@ export function ActivityForm() {
             className="h-4 w-4 rounded border-border text-red-600 focus:ring-red-500"
           />
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
+            <AlertTriangle className="h-4 w-4 text-red-500" aria-hidden="true" />
             <span className="text-sm font-medium text-foreground">Flag as Harassment</span>
           </div>
         </label>

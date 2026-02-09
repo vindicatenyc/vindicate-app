@@ -1,14 +1,16 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Upload, Plus } from 'lucide-react';
+import { fadeIn } from '@/lib/animations';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { AccountList } from '@/components/accounts/account-list';
 
 export default function AccountsPage() {
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <PageHeader
         title="Accounts"
         description="Track and manage all your debt accounts."
@@ -31,6 +33,6 @@ export default function AccountsPage() {
       />
 
       <AccountList />
-    </div>
+    </motion.div>
   );
 }

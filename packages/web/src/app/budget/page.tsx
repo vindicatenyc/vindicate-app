@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { fadeIn } from '@/lib/animations';
 import { PageHeader } from '@/components/ui/page-header';
 import { useBudget } from '@/hooks/use-budget';
 import { useCreditScore } from '@/hooks/use-credit-score';
@@ -10,15 +13,27 @@ import {
   IncomeSection,
   ExpenseSection,
   BudgetBar,
-  SpendingChart,
-  TrendChart,
   DebtTracker,
   CreditScoreCard,
   CreditFactors,
-  ScoreTrend,
   SavingsGoals,
 } from '@/components/budget';
 import type { DebtStrategy } from '@/lib/utils/debt-calculator';
+
+const SpendingChart = dynamic(
+  () => import('@/components/budget/spending-chart').then(mod => ({ default: mod.SpendingChart })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
+
+const TrendChart = dynamic(
+  () => import('@/components/budget/trend-chart').then(mod => ({ default: mod.TrendChart })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
+
+const ScoreTrend = dynamic(
+  () => import('@/components/budget/score-trend').then(mod => ({ default: mod.ScoreTrend })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
 
 function getMonthKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -78,7 +93,7 @@ export default function BudgetPage() {
         className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
         aria-label="Previous month"
       >
-        <ChevronLeft className="h-5 w-5" />
+        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
       </button>
       <span className="min-w-[160px] text-center text-sm font-medium text-foreground">
         {getMonthLabel(selectedMonth)}
@@ -88,13 +103,13 @@ export default function BudgetPage() {
         className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
         aria-label="Next month"
       >
-        <ChevronRight className="h-5 w-5" />
+        <ChevronRight className="h-5 w-5" aria-hidden="true" />
       </button>
     </div>
   );
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <PageHeader
         title="Budget & Financial Health"
         description="Track income, expenses, and debt repayment progress."
@@ -164,6 +179,6 @@ export default function BudgetPage() {
         onUpdate={updateSavingsGoal}
         onDelete={deleteSavingsGoal}
       />
-    </div>
+    </motion.div>
   );
 }

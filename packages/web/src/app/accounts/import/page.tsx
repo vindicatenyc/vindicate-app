@@ -1,15 +1,24 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { WizardStepper } from '@/components/ui/wizard-stepper';
 import { Button } from '@/components/ui/button';
-import { StepUpload } from '@/components/accounts/import/step-upload';
 import { StepReview, MOCK_FOUND_ACCOUNTS } from '@/components/accounts/import/step-review';
-import { StepConfirm } from '@/components/accounts/import/step-confirm';
 import { useAccounts } from '@/hooks/use-accounts';
+
+const StepUpload = dynamic(
+  () => import('@/components/accounts/import/step-upload').then(mod => ({ default: mod.StepUpload })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
+
+const StepConfirm = dynamic(
+  () => import('@/components/accounts/import/step-confirm').then(mod => ({ default: mod.StepConfirm })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-lg bg-muted" /> }
+);
 
 const WIZARD_STEPS = [
   { id: 'upload', label: 'Upload' },

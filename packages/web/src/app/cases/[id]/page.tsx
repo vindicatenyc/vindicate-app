@@ -1,8 +1,10 @@
 'use client';
 
 import { useCallback } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { fadeIn } from '@/lib/animations';
 import { ArrowLeft } from 'lucide-react';
 import { CASE_STATUS_CONFIG } from '@vindicate/shared';
 import { useCases } from '@/hooks/use-cases';
@@ -60,7 +62,7 @@ export default function CaseDetailPage({
   const typeLabel = CASE_TYPE_LABELS[caseItem.type] ?? caseItem.type;
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       {/* Header */}
       <div>
         <Link
@@ -185,6 +187,6 @@ export default function CaseDetailPage({
           <CaseReminderForm onAdd={handleAddReminder} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

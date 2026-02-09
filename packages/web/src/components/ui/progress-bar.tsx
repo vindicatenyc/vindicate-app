@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface ProgressBarProps {
@@ -32,7 +35,14 @@ export function ProgressBar({
   size = 'md',
   className,
 }: ProgressBarProps) {
+  const [animated, setAnimated] = useState(false);
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+
+  // Animate from 0 to target on mount
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => setAnimated(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
 
   return (
     <div className={cn('w-full', className)}>
@@ -61,10 +71,10 @@ export function ProgressBar({
       >
         <div
           className={cn(
-            'h-full rounded-full transition-all duration-500 ease-out',
+            'h-full rounded-full transition-all duration-700 ease-out',
             variantClasses[variant]
           )}
-          style={{ width: `${percentage}%` }}
+          style={{ width: animated ? `${percentage}%` : '0%' }}
         />
       </div>
     </div>

@@ -3,12 +3,21 @@
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { MobileNav } from './mobile-nav';
-import { VinnyChatPanel } from '@/components/vinny/vinny-chat-panel';
+import dynamic from 'next/dynamic';
 import { VinnyFab } from '@/components/vinny/vinny-fab';
+import { OnboardingWizard } from '@/components/onboarding';
+
+const VinnyChatPanel = dynamic(
+  () => import('@/components/vinny/vinny-chat-panel').then(mod => ({ default: mod.VinnyChatPanel })),
+  { ssr: false }
+);
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background">
+      {/* Onboarding overlay (first visit only) */}
+      <OnboardingWizard />
+
       {/* Desktop sidebar */}
       <Sidebar />
 

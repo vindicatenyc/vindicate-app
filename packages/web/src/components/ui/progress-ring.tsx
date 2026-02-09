@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface ProgressRingProps {
@@ -28,10 +31,19 @@ export function ProgressRing({
   showValue = true,
   className,
 }: ProgressRingProps) {
+  const [animated, setAnimated] = useState(false);
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-  const offset = circumference - (percentage / 100) * circumference;
+  const targetOffset = circumference - (percentage / 100) * circumference;
+
+  // Start from 0 and animate to target on mount
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => setAnimated(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
+
+  const offset = animated ? targetOffset : circumference;
 
   return (
     <div
@@ -62,7 +74,7 @@ export function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          className={cn(variantStrokes[variant], 'transition-all duration-500 ease-out')}
+          className={cn(variantStrokes[variant], 'transition-all duration-700 ease-out')}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}

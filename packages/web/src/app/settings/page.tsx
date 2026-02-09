@@ -1,8 +1,12 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { fadeIn } from '@/lib/animations';
 import { PageHeader } from '@/components/ui/page-header';
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <PageHeader
         title="Settings"
         description="Manage your preferences, theme, and account settings."
@@ -13,6 +17,6 @@ export default function SettingsPage() {
           Theme, notification preferences, state selection, and profile settings will appear here.
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }

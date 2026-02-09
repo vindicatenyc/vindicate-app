@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Search, Scale, ScrollText, BookOpen, Bot } from 'lucide-react';
+import { fadeIn } from '@/lib/animations';
 import { PageHeader } from '@/components/ui/page-header';
 import { Badge } from '@/components/ui/badge';
 import { ResourceCard } from '@/components/resources/resource-card';
@@ -68,7 +70,7 @@ export default function ResourcesPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <PageHeader
         title="Resource Center"
         description="Know your rights. Access guides, templates, and educational content."
@@ -187,6 +189,6 @@ export default function ResourcesPage() {
           </div>
         </section>
       )}
-    </div>
+    </motion.div>
   );
 }
