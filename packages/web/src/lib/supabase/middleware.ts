@@ -31,10 +31,21 @@ export async function updateSession(request: NextRequest) {
 
   const {
     data: { user },
+    error: getUserError,
   } = await supabase.auth.getUser();
+
+  if (getUserError) {
+    console.error("[middleware] getUser error:", getUserError.message);
+  }
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
   const isAuthCallback = request.nextUrl.pathname === "/auth/callback";
+  const isApiRoute = request.nextUrl.pathname.startsWith("/api");
+
+  // Don't block API routes — they handle their own auth
+  if (isApiRoute) {
+    return supabaseResponse;
+  }
 
   // If no session and not on auth page, redirect to login
   if (!user && !isAuthPage) {
